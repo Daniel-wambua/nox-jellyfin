@@ -184,6 +184,70 @@ Honest list, so you know what you are installing:
 
 ---
 
+## If nothing changes at all
+
+A theme that applies but looks wrong is a design problem. A theme where *nothing*
+changes is an install problem, and there are only three candidates. Work through
+these in order — each takes seconds.
+
+### 1. Does Jellyfin apply the CSS box at all?
+
+Paste this into Custom CSS, replacing whatever is there, and save:
+
+```css
+#reactRoot { outline: 6px solid red !important; }
+```
+
+Hard-refresh. **No red outline around the page?** Jellyfin is not applying Custom
+CSS at all. Check:
+
+- You are in **Dashboard → General → Custom CSS** (scroll to the bottom), not a
+  per-user or per-library setting.
+- You clicked **Save** below the box — the setting does not autosave.
+- You are testing in a **web browser**. Custom CSS only reaches the web client;
+  the Android TV, Android, iOS and Roku apps ignore it entirely.
+
+If you do get the red outline, the box works and the problem is step 2 or 3.
+
+### 2. Can your browser reach the CDN?
+
+Open this in a new tab:
+
+```
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
+```
+
+It should display the stylesheet as plain text. If it 404s, hangs, or is blocked,
+your network or DNS filter cannot reach jsDelivr — common on self-hosted setups
+behind Pi-hole or with outbound filtering. Use the self-hosted route below.
+
+### 3. Is the `@import` the first rule?
+
+If anything at all precedes the `@import` — a comment, a variable, a leftover
+rule from another theme — browsers **drop the import silently**, with no console
+message. Delete everything above it.
+
+### The route that cannot fail
+
+Paste the **entire contents** of `nox.css` into the box instead of importing it.
+No network request, no import-ordering rule, no CDN cache. If step 1 gave you a
+red outline, this works. Open the file, select all, paste, save, hard-refresh.
+
+### Self-hosting
+
+Put `nox.css` somewhere your reverse proxy already serves, and import it with a
+relative path:
+
+```css
+@import url('/nox.css');
+```
+
+If you copy it into Jellyfin's own web root (inside a Docker container this is
+usually `/usr/share/jellyfin/web/`), note that the file is removed by a Jellyfin
+image upgrade and must be copied back.
+
+---
+
 ## Verifying an install
 
 After saving the CSS and hard-refreshing:
