@@ -13,7 +13,7 @@ Jellyfin Web → **Dashboard → General → Custom CSS**, and paste one of thes
 **Pinned to a release** (recommended):
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css');
 ```
 
 The `@import` must be the first rule in the box. If Jellyfin's editor already has something above it, move it up or the import is silently dropped.
@@ -44,7 +44,7 @@ Hard-refresh after saving — <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>, or 
 
 | Surface | What Nox does |
 |---|---|
-| **Navigation** | Replaces the top bar with a floating black pill rail on the left: icon over label, widening on hover or keyboard focus. Below 1100px the rail is switched off and the bar keeps Jellyfin's layout with the theme's surface, hover fill and accent. |
+| **Navigation** | Replaces the top bar with a floating black pill rail on the left: icon over label, widening on hover or keyboard focus. Covers both app shells — the legacy `.skinHeader` and the MUI header newer clients render. Below 1100px the rail is switched off and the bar keeps Jellyfin's layout with the theme's surface, hover fill and accent. |
 | **Home rows** | Poster cards at 10 × 15 rem with a 0.5 rem radius, a hover lift and shadow, progress bars in the accent, scroll arrows that appear on hover only. |
 | **Hero** | Full-width artwork in a rounded frame, a dark scrim for text contrast, the title in a display face, and the action buttons on a black plaque cut into the card. |
 | **Detail pages** | Same hero treatment, plus themed tabs, metadata, and the full action row. |
@@ -83,6 +83,16 @@ Both were found by measuring a real page rather than by reading the stylesheet, 
 **Specificity ties are decided by load order.** Jellyfin's own `.skinHeader { position: fixed; left: 0; right: 0; top: 0 }` has exactly the same specificity as a plain `.skinHeader` rule of ours, and it is served from a `<link>` in `<head>` while Custom CSS is injected as a `<style>` in the body. Whichever the browser parses last wins, so a plain selector can silently do nothing at all. Every header rule in `nox.css` is therefore written `body .skinHeader ...` — (0,1,1) against Jellyfin's (0,1,0). It wins on specificity rather than on luck, and it does so without `!important`.
 
 The header has been measured in both orders, theme-first and theme-last, and computes identically either way.
+
+### There are two app shells
+
+Recent Jellyfin clients ship a second, MUI-based shell around the same page content. The old markup is still in the DOM, but parked inside a `display: none` wrapper — `.skinHeader`, `.mainDrawer` and the drawer handle are all in there — while the header a viewer actually sees is `<header class="MuiAppBar-root MuiPaper-root …">`. On those clients a theme written only against `.skinHeader` styles a subtree nobody renders. The palette still lands, because it is set on `:root`; the header looks untouched. That is the signature of this failure, and it is easy to mistake for a broken install.
+
+Nox handles both. Section 3 styles the legacy `.skinHeader`; section 3b styles the MUI header as the same pill, with the navigation stack at the top, the account actions pinned to the bottom, and the page offset by the collapsed rail width.
+
+Two details of MUI's CSS shape section 3b. Its component rules are emitted as **two-class** selectors — `.css-h48fi.MuiAppBar-root` — which outrank one class plus any number of element names, so `body header.MuiAppBar-root` silently loses on `width`, `padding`, `border-radius`, `inset` and `z-index`, and the rail reverts to a full-width bar. Every rule there therefore also names the element's second MUI class (`header.MuiAppBar-root.MuiPaper-root`), which wins on class count rather than on `!important`. Separately, Jellyfin pins the Search button with `position: absolute` outside the toolbar's flow; that one declaration is forced, and it is the only `!important` the rail needs.
+
+The MUI class names are stable (they are MUI's own, not Jellyfin's generated ones), but the *shape* of the header is not — if a future client reworks it, section 3b is the first place to look.
 
 ### Below 1100px
 
@@ -143,7 +153,7 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
 
 | File | Purpose |
 |---|---|
-| `nox.css` | The theme. This is the file you install. ~1680 lines, 17 numbered sections. |
+| `nox.css` | The theme. This is the file you install. ~1900 lines, 17 numbered sections. |
 | `nox.min.css` | Minified build of the same file. Same rules, smaller transfer. |
 | `tokens.css` | Standalone token layer: the `:root` block, all 15 palettes and the Jellyfin bridge. Optional. |
 | `palette.json` | Every token with its value, the rule that declares it, and the selectors that consume it. Includes measured contrast ratios. |
@@ -165,6 +175,8 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
  8. Cards
 ```
 
+Section 3 carries both headers: 3 styles the legacy `.skinHeader`, 3b the MUI header newer clients render.
+
 ---
 
 ## Update resilience
@@ -175,7 +187,7 @@ Jellyfin Web changes its DOM between releases, and any theme that reaches into i
 - **Everything flows from tokens.** A broken layout rule cannot take the palette down with it, and a palette change cannot break layout.
 - **One BRITTLE section.** Every selector that depends on something Jellyfin has *not* promised to keep — the `--jf-palette-*` MUI bridge, the now-playing bar, settings cards, skeleton placeholders — is collected in section 16. If a Jellyfin update breaks the theme, start there. If something breaks outside section 16, it is a bug worth reporting.
 - **Fallbacks, not assumptions.** `@supports` guards for `backdrop-filter` and `color-mix()`, `forced-colors` support, and a `prefers-reduced-motion` block that disables all motion rather than merely shortening it.
-- **`!important` only where a stylesheet cannot win** — 17 declarations, each with a comment giving its reason. They fall into four groups: Jellyfin writes the dashboard backdrop colour onto `<body>` as an inline style; it paints the header's background inline the same way; it paints the seek and volume fills and the tooltips inline; and MUI's skeleton placeholders set `--base-color` and `--highlight-color` as inline custom properties. The reduced-motion block is the fourth — it has to beat every transition the theme declares. Everywhere else, a `body` prefix or a longer selector does the job instead.
+- **`!important` only where a stylesheet cannot win** — 24 declarations, each with a comment giving its reason. They fall into five groups: Jellyfin writes the dashboard backdrop colour onto `<body>` as an inline style; it paints the header's background inline the same way; it paints the seek and volume fills and the tooltips inline; MUI's skeleton placeholders set `--base-color` and `--highlight-color` as inline custom properties; and MUI pins one header button with `position: absolute`. The reduced-motion block is a sixth — it has to beat every transition the theme declares. Everywhere else, a `body` prefix or a longer selector does the job instead, including the rest of the MUI shell, which is matched on class count rather than forced.
 
 ---
 
@@ -232,7 +244,7 @@ If you do get the red outline, the box works and the problem is step 2 or 3.
 Open this in a new tab:
 
 ```
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css
 ```
 
 It should display the stylesheet as plain text. If it 404s, hangs, or is blocked,
@@ -253,7 +265,7 @@ red outline, this works. Open the file, select all, paste, save, hard-refresh.
 
 ### The page retinted but the header is still Jellyfin's
 
-The theme is applied — this is not an install problem. Four causes, in order of
+The theme is applied — this is not an install problem. Five causes, in order of
 likelihood.
 
 **You are on a stale CDN copy.** If you import through `@main`, jsDelivr can keep
@@ -261,11 +273,11 @@ serving an older build of the file for up to twelve hours after a change, and th
 symptom is indistinguishable from a broken theme: the palette updates, the header
 does not. There is no error anywhere. Compare what your browser actually has
 against jsDelivr by opening both in new tabs and checking the file size —
-the current build is 44,425 bytes:
+the current build is 51,621 bytes:
 
 ```
 https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css
 ```
 
 If the `@main` copy is smaller, switch the import to `@0.1.2`.
@@ -281,6 +293,18 @@ stylesheet the browser parsed last — and even when it did apply, the rail
 collapsed to an empty strip because Jellyfin wraps the header buttons in a
 wrapper the theme did not handle. Both are fixed in 0.1.2 and later. Update, then
 hard-refresh.
+
+**Your client renders the MUI app shell, and you are on 0.1.3 or earlier.**
+Recent clients wrap the page in an MUI header (`<header class="MuiAppBar-root …">`)
+and park the old `.skinHeader` markup inside a `display: none` wrapper. Before
+0.1.4 the theme styled only the hidden copy, so the palette changed and the
+header did not. Check in the console:
+
+```js
+document.querySelector('header.MuiAppBar-root')   // null on old clients
+```
+
+If that returns an element, update to 0.1.4 or later.
 
 **A stale stylesheet.** The rail's width, radius and background all live in the
 same rules, so a cached older `nox.css` shows the old behaviour with the new

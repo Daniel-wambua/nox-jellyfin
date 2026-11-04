@@ -7,7 +7,7 @@
  * Jellyfin Web → Dashboard → General → Custom CSS, then paste either the whole
  * of this file, or this one line and let the CDN serve it:
  *
- *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css');
+ *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css');
  *
  * The @import must be the first rule in the box. Prefer a release tag over
  * @main: jsDelivr caches a branch ref for up to twelve hours and can serve an
@@ -695,6 +695,233 @@ body .skinHeader .headerButton:focus-visible {
 
   body .mainDrawerHandle {
     display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3b. THE MODERN APP SHELL
+   --------------------------------------------------------------------------
+   Newer Jellyfin clients render a second, MUI-based shell around the same
+   page content. The old markup is still in the DOM but parked inside a
+   `display: none` wrapper: `.skinHeader`, `.mainDrawer` and the drawer handle
+   live there, while what a viewer actually sees is
+
+       header.MuiAppBar-root > .MuiToolbar-root > (.MuiStack-root, …)
+
+   On those clients the rules above style a subtree nobody renders, so the
+   theme appears to half-work: the palette lands (it is set on `:root`), the
+   header does not. This block lays the visible shell out as the same pill.
+
+   Two things about MUI's own CSS shape these rules.
+
+   First, its component styles are emitted as two-class selectors —
+   `.css-h48fi.MuiAppBar-root` — which outrank one class plus any number of
+   element names. `body header.MuiAppBar-root` loses to them on `width`,
+   `padding`, `border-radius`, `inset` and `z-index` without saying so, which
+   is exactly how a rail turns back into a full-width bar. Every rule here
+   therefore carries the element's second MUI class as well
+   (`header.MuiAppBar-root.MuiPaper-root`), which wins on class count and
+   leaves `!important` for the single case below that really needs it.
+
+   Second, Jellyfin positions the Search button absolutely inside the actions
+   box rather than laying it out in flow, so a column layout would strand it
+   at the top of the rail. That one declaration has to be forced.
+
+   The login screen and first-run wizard have no app bar, so none of this
+   applies to them.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1100px) {
+  body header.MuiAppBar-root.MuiPaper-root {
+    position: fixed;
+    top: var(--nox-rail-inset);
+    bottom: var(--nox-rail-inset);
+    left: var(--nox-rail-inset);
+    right: auto;
+    width: var(--nox-rail-w);
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--nox-surface);
+    background-image: none;
+    color: var(--nox-text);
+    border: 1px solid var(--nox-border);
+    border-radius: var(--nox-rail-radius);
+    box-shadow: var(--nox-shadow-rail);
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 900;
+    transition: width var(--nox-dur-rail) var(--nox-ease-out);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root:hover,
+  body header.MuiAppBar-root.MuiPaper-root:focus-within {
+    width: var(--nox-rail-w-open);
+  }
+
+  /* The shell reserves a full-width strip at the top of the page for the bar
+     it expects. The rail is out of that flow, so the strip is only dead space. */
+  body .MuiBox-root:has(> header.MuiAppBar-root) > div:empty {
+    display: none;
+  }
+
+  /* The page itself is absolutely positioned against the shell, so it ignores
+     the shell's padding. Offset it directly, by the collapsed rail width, so
+     opening the rail never shifts the content. */
+  body main.MuiBox-root .page.mainAnimatedPage {
+    left: calc(var(--nox-rail-w) + var(--nox-rail-inset) * 2);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    gap: 0.125rem;
+    background: transparent;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiStack-root {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 0.125rem;
+  }
+
+  /* Navigation entries. These carry a real text label rather than a `title`
+     attribute, so the collapsed state hides it with `font-size: 0` — an
+     unlabelled text node has no box to target — and the open state restores
+     it. The icon is sized in `rem` by its own class, so it is unaffected. */
+  body header.MuiAppBar-root.MuiPaper-root .MuiStack-root > a.MuiButton-root {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 2.9rem;
+    margin: 0;
+    padding: 0.4rem 0.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    font-size: 0;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    color: var(--nox-text-secondary);
+    text-transform: none;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root:hover .MuiStack-root > a.MuiButton-root,
+  body header.MuiAppBar-root.MuiPaper-root:focus-within .MuiStack-root > a.MuiButton-root {
+    align-items: flex-start;
+    padding-left: 0.6rem;
+    font-size: 0.62rem;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiStack-root > a.MuiButton-root:hover {
+    background-color: rgba(var(--nox-accent-rgb), 0.1);
+    color: var(--nox-accent);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiStack-root > a.MuiButton-root .MuiSvgIcon-root {
+    font-size: 1.35rem;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiStack-root > a.MuiButton-root img {
+    max-width: 2rem;
+    max-height: 2rem;
+    object-fit: contain;
+  }
+
+  /* Account actions and plugin buttons, pinned below the navigation. */
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .je-header-actions-host {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.125rem;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .je-header-buttons-tray {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root {
+    width: 100%;
+    height: auto;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0.35rem 0.25rem;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    color: var(--nox-text-secondary);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root:hover {
+    background-color: rgba(var(--nox-accent-rgb), 0.1);
+    color: var(--nox-accent);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root .MuiSvgIcon-root {
+    font-size: 1.35rem;
+  }
+
+  /* These buttons label themselves with `aria-label`, so the rail can reuse
+     that string as visible text the same way the legacy rail reuses `title`. */
+  body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root::after {
+    content: attr(aria-label);
+    font-size: 0.6rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    opacity: 0;
+    transition: opacity var(--nox-dur-base) var(--nox-ease);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root:hover .MuiIconButton-root::after,
+  body header.MuiAppBar-root.MuiPaper-root:focus-within .MuiIconButton-root::after {
+    opacity: 1;
+  }
+
+  /* Jellyfin pins this one button with `position: absolute` outside the
+     toolbar's flow; nothing below `!important` outranks it. */
+  body header.MuiAppBar-root.MuiPaper-root .je-header-actions-host > a.MuiIconButton-root {
+    position: static !important;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiAvatar-root {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin: 0 auto;
+    border: 1px solid var(--nox-border-strong);
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiBox-root:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 }
 
