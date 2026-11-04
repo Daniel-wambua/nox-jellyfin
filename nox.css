@@ -414,7 +414,16 @@ a:focus-visible {
    2. HEADER BASE
    ========================================================================== */
 
-.skinHeader {
+/* Why every header rule below starts with `body`:
+   Jellyfin's own `.skinHeader` rule lives in its bundle stylesheet, which can
+   load after the custom-CSS block. When two rules have equal specificity the
+   later one wins, so a plain `.skinHeader` rule of ours loses and the header
+   silently reverts to Jellyfin's defaults — the exact symptom of "the theme
+   loaded but the header is stock". Prefixing with `body` takes these rules
+   from (0,1,0) to (0,1,1), which beats Jellyfin's rule whatever the load
+   order. This is cheaper and safer than sprinkling `!important`. */
+
+body .skinHeader {
   background-color: transparent;
   background-image: none;
   border: none;
@@ -427,15 +436,24 @@ a:focus-visible {
     width var(--nox-dur-rail) var(--nox-ease-out);
 }
 
-.skinHeader .headerButton {
+body .skinHeader .headerButton {
+  /* Jellyfin builds these buttons as `<button is="paper-icon-button-light">`, a
+     customised built-in element whose constructor adds the
+     `.paper-icon-button-light` class — and that class is what paints the button
+     background transparent. Browsers without support for customised built-ins
+     (Safari) never run that constructor, so the button falls back to the
+     browser's own grey `ButtonFace` and every icon in the bar turns into a
+     filled circle. Declaring the background here costs nothing and makes the
+     header independent of whether the element upgrade happened. */
+  background-color: transparent;
   color: var(--nox-text-secondary);
   transition:
     background-color var(--nox-dur-fast) var(--nox-ease),
     color var(--nox-dur-fast) var(--nox-ease);
 }
 
-.skinHeader .headerButton:hover,
-.skinHeader .headerButton:focus-visible {
+body .skinHeader .headerButton:hover,
+body .skinHeader .headerButton:focus-visible {
   color: var(--nox-text);
 }
 
@@ -455,23 +473,32 @@ a:focus-visible {
 /* ==========================================================================
    3. NAVIGATION RAIL (≥1100px)
    --------------------------------------------------------------------------
-   Jellyfin's header is a horizontal bar whose children (`.headerLeft`,
-   `.headerRight`) are laid out by the client's own stylesheets. From 1100px up
-   Nox turns the whole bar into a fixed vertical pill on the left edge and
-   stacks those two groups inside it. Nothing moves in the DOM, so no Jellyfin
-   behaviour changes: the drawer button still opens the drawer, the account
-   button still opens its menu.
+   Jellyfin's header is a fixed horizontal bar. From 1100px up Nox turns it
+   into a floating vertical pill on the left edge: icon over name, navigation
+   at the top, account actions pinned to the bottom.
 
-   At rest the pill is icon-only. Pointing at it — or tabbing into it — widens
-   the pill and reveals the name under each icon.
+   Two details of Jellyfin's markup decide how this has to be written.
+
+   First, the buttons are not direct children of `.skinHeader`. Jellyfin wraps
+   `.headerLeft` and `.headerRight` in `.headerTop`, a row-flex wrapper that
+   also carries `.flex-grow`. Restyling the two groups without handling that
+   wrapper collapses `.headerLeft` to zero width and strands `.headerRight`
+   halfway down the pill, so `.headerTop` is re-laid-out below as the pill's
+   single column.
+
+   Second, the group selectors are written as `body .skinHeader ...` for the
+   load-order reason explained in section 2.
+
+   Nothing moves in the DOM, so no Jellyfin behaviour changes: the drawer
+   button still opens the drawer, the account button still opens its menu.
    ========================================================================== */
 
 @media (min-width: 1100px) {
-  .mainAnimatedPages {
+  body .mainAnimatedPages {
     padding-left: var(--nox-rail-w);
   }
 
-  .skinHeader {
+  body .skinHeader {
     position: fixed;
     top: var(--nox-rail-inset);
     bottom: var(--nox-rail-inset);
@@ -481,13 +508,18 @@ a:focus-visible {
     height: auto;
     max-height: none;
     margin: 0;
-    padding: 0.75rem 0.5rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
     gap: 0;
-    overflow: hidden;
+    /* The labels add about 1.4rem to every button as the rail opens, so on a
+       short screen the column grows taller than the viewport. Scrolling keeps
+       the bottom actions reachable instead of letting the pill clip them; when
+       everything fits, no scrollbar is drawn. */
+    overflow-x: hidden;
+    overflow-y: auto;
     border-radius: var(--nox-rail-radius);
     border: 1px solid var(--nox-border);
     /* Jellyfin writes an inline background-color onto the header when a
@@ -501,46 +533,70 @@ a:focus-visible {
     z-index: 900;
   }
 
-  .skinHeader:hover,
-  .skinHeader:focus-within {
+  body .skinHeader:hover,
+  body .skinHeader:focus-within {
     width: var(--nox-rail-w-open);
     border-color: var(--nox-border-strong);
   }
 
   /* Headroom.js slides the bar upward on scroll. A rail must not move. */
-  .skinHeader.headroom--not-top,
-  .skinHeader.headroom--pinned,
-  .skinHeader.headroom--unpinned {
+  body .skinHeader.headroom--not-top,
+  body .skinHeader.headroom--pinned,
+  body .skinHeader.headroom--unpinned {
     transform: none;
     top: var(--nox-rail-inset);
     border-bottom-color: var(--nox-border);
   }
 
-  .skinHeader .headerLeft,
-  .skinHeader .headerRight {
+  /* The wrapper Jellyfin puts around both button groups. Without this the two
+     groups stay side by side inside it, `.headerLeft` collapses to nothing
+     because its buttons are `width: 100%` of a zero-width box, and the rail
+     renders as an empty strip. */
+  body .skinHeader > .headerTop {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  body .skinHeader .headerLeft,
+  body .skinHeader .headerRight {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 0 0 auto;
     gap: 0.125rem;
     width: 100%;
     margin: 0;
     padding: 0;
+    overflow: visible;
   }
 
-  .skinHeader .headerRight {
+  body .skinHeader .headerRight {
     margin-top: auto;
     padding-top: 0.5rem;
     border-top: 1px solid var(--nox-border);
   }
 
-  .skinHeader .pageTitle,
-  .skinHeader .pageTitleWithDefaultLogo,
-  .skinHeader .headerLogo {
+  body .skinHeader .pageTitle,
+  body .skinHeader .pageTitleWithDefaultLogo,
+  body .skinHeader .headerLogo {
+    display: none;
+  }
+
+  /* Library filter tabs also live in the header and cannot survive a 4.5rem
+     column. They stay in the DOM for the client's own code, but not on screen. */
+  body .skinHeader .headerTabs {
     display: none;
   }
 
   /* Each button becomes an icon stacked over its name. */
-  .skinHeader .headerButton {
+  body .skinHeader .headerButton {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -550,27 +606,28 @@ a:focus-visible {
     width: 100%;
     height: auto;
     min-height: 2.75rem;
+    flex: 0 0 auto;
     margin: 0;
     padding: 0.5rem 0.25rem;
     border-radius: 0.85rem;
     background-color: transparent;
   }
 
-  .skinHeader .headerButton:hover,
-  .skinHeader .headerButton:focus-visible {
+  body .skinHeader .headerButton:hover,
+  body .skinHeader .headerButton:focus-visible {
     background-color: rgba(164, 179, 201, 0.1);
   }
 
-  .skinHeader .headerButton .material-icons,
-  .skinHeader .headerButton .md-icon,
-  .skinHeader .headerButton i {
+  body .skinHeader .headerButton .material-icons,
+  body .skinHeader .headerButton .md-icon,
+  body .skinHeader .headerButton i {
     font-size: 1.4rem;
     line-height: 1;
   }
 
   /* The name. `attr(title)` is the only way to surface Jellyfin's own button
      labels without JavaScript, and every header button carries a title. */
-  .skinHeader .headerButton::after {
+  body .skinHeader .headerButton::after {
     content: attr(title);
     display: block;
     max-height: 0;
@@ -582,6 +639,10 @@ a:focus-visible {
     line-height: 1.4;
     letter-spacing: 0;
     white-space: nowrap;
+    /* Localised labels can outrun the pill's width. `max-width` gives the
+       ellipsis below something to truncate against; without it the pseudo
+       element sizes to its text and the overflow is clipped mid-letter. */
+    max-width: 100%;
     text-overflow: ellipsis;
     color: var(--nox-text-secondary);
     transition:
@@ -590,68 +651,112 @@ a:focus-visible {
       color var(--nox-dur-fast) var(--nox-ease);
   }
 
-  .skinHeader:hover .headerButton::after,
-  .skinHeader:focus-within .headerButton::after {
+  body .skinHeader:hover .headerButton::after,
+  body .skinHeader:focus-within .headerButton::after {
     opacity: 1;
     max-height: 1.4rem;
   }
 
-  .skinHeader .headerButton:hover::after,
-  .skinHeader .headerButton:focus-visible::after {
+  body .skinHeader .headerButton:hover::after,
+  body .skinHeader .headerButton:focus-visible::after {
     color: var(--nox-text);
   }
 
-  /* The first entry reads as the current location, the way a home icon would
-     in this layout. */
-  .skinHeader .headerLeft .headerButton:first-child {
+  /* The leading entry reads as the current location: Home when it is on
+     screen, otherwise the Menu button that opens the drawer. Jellyfin toggles
+     the `.hide` class rather than adding and removing nodes, and a hidden
+     sibling still counts as a child, so `:first-child` would land on the Back
+     button that is hidden on almost every page. `:has()` tests what is
+     actually rendered instead. */
+  body .skinHeader .headerLeft:has(.headerHomeButton:not(.hide)) .headerHomeButton,
+  body .skinHeader .headerLeft:not(:has(.headerHomeButton:not(.hide))) .mainDrawerButton {
     color: var(--nox-accent);
     background-color: rgba(var(--nox-accent-rgb), 0.12);
   }
 
-  .skinHeader .headerLeft .headerButton:first-child:hover,
-  .skinHeader .headerLeft .headerButton:first-child:focus-visible {
+  body .skinHeader .headerLeft:has(.headerHomeButton:not(.hide)) .headerHomeButton:hover,
+  body .skinHeader .headerLeft:has(.headerHomeButton:not(.hide)) .headerHomeButton:focus-visible,
+  body .skinHeader .headerLeft:not(:has(.headerHomeButton:not(.hide))) .mainDrawerButton:hover,
+  body .skinHeader .headerLeft:not(:has(.headerHomeButton:not(.hide))) .mainDrawerButton:focus-visible {
     background-color: rgba(var(--nox-accent-rgb), 0.2);
   }
 
-  .skinHeader .headerLeft .headerButton:first-child::after {
+  body .skinHeader .headerHomeButton::after,
+  body .skinHeader .mainDrawerButton::after {
     color: var(--nox-accent);
   }
 
   /* The drawer opens over the rail; shift it clear. */
-  .mainDrawer {
+  body .mainDrawer {
     left: calc(var(--nox-rail-w) + var(--nox-rail-inset) * 2);
   }
 
-  .mainDrawerHandle {
+  body .mainDrawerHandle {
     display: none;
   }
 }
 
 /* ==========================================================================
    4. TOP BAR (<1100px)
+   --------------------------------------------------------------------------
+   Below 1100px the rail is switched off and the client's own horizontal bar
+   comes back. Restyling it is a deliberate choice rather than a fallback: a
+   fixed side rail and a phone-width viewport do not coexist, and a squeezed
+   rail is worse than a good bar. The bar keeps Jellyfin's layout — the buttons
+   stay where the client's own keyboard and screen-reader order expects them —
+   but takes the theme's surface: transparent over the top of the page, a
+   translucent blurred surface with a hairline once the page scrolls, a round
+   hover fill on every icon button, and the accent on whichever of Home or Menu
+   is the leading entry.
    ========================================================================== */
 
 @media (max-width: 1099px) {
-  .mainAnimatedPages {
+  body .mainAnimatedPages {
     padding-left: 0;
+  }
+
+  body .skinHeader {
+    background-color: transparent;
+    background-image: none;
+    border: 0;
+    box-shadow: none;
   }
 
   /* !important is required for the same reason as the body rule above: once a
      backdrop is configured, Jellyfin paints the header's background inline. */
-  .skinHeader.headroom--not-top {
-    background-color: color-mix(in srgb, var(--nox-bg) 72%, transparent) !important;
+  body .skinHeader.headroom--not-top {
+    background-color: color-mix(in srgb, var(--nox-bg) 76%, transparent) !important;
     -webkit-backdrop-filter: blur(var(--nox-blur)) saturate(140%);
     backdrop-filter: blur(var(--nox-blur)) saturate(140%);
-    border-bottom-color: var(--nox-border);
+    border-bottom: 1px solid var(--nox-border);
   }
 
-  .skinHeader .headerButton {
-    border-radius: 0.6rem;
+  body .skinHeader .headerTop {
+    padding: 0.25rem 0.5rem;
   }
 
-  .skinHeader .headerButton:hover,
-  .skinHeader .headerButton:focus-visible {
+  body .skinHeader .headerButton {
+    border-radius: var(--nox-radius-pill);
+    color: var(--nox-text-secondary);
+  }
+
+  body .skinHeader .headerButton:hover,
+  body .skinHeader .headerButton:focus-visible {
     background-color: rgba(164, 179, 201, 0.12);
+    color: var(--nox-text);
+  }
+
+  /* The same "where am I" cue the rail uses: the leading entry carries the
+     accent, whichever of Home or Menu the client is currently showing. See
+     section 3 for why this is tested with `:has()` and not `:first-child`. */
+  body .skinHeader .headerLeft:has(.headerHomeButton:not(.hide)) .headerHomeButton,
+  body .skinHeader .headerLeft:not(:has(.headerHomeButton:not(.hide))) .mainDrawerButton {
+    color: var(--nox-accent);
+    background-color: rgba(var(--nox-accent-rgb), 0.12);
+  }
+
+  body .skinHeader .headerTabs {
+    border-bottom: 1px solid var(--nox-border);
   }
 }
 
@@ -1466,7 +1571,7 @@ a:focus-visible {
    half-transparent one with no blur behind it. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   @media (max-width: 1099px) {
-    .skinHeader.headroom--not-top {
+    body .skinHeader.headroom--not-top {
       background-color: var(--nox-bg) !important;
     }
   }

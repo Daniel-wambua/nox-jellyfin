@@ -1,6 +1,6 @@
 {
   "name": "Nox",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Canonical token source for the Nox Jellyfin theme. Every colour, radius, duration and metric the theme uses is declared here once and consumed by nox.css. Nothing is estimated: each entry names the rule that declares it and the selectors in nox.css that read it.",
   "license": "MIT",
 
@@ -15,7 +15,8 @@
   "conventions": {
     "definedIn": "The selector whose rule block declares the custom property. `:root` is the default palette; `.nox-*` is an alternate.",
     "usedIn": "Representative selectors in nox.css that consume the property. Not exhaustive — it shows each token's design intent.",
-    "values": "Custom properties are consumed with var(). Where a property is read back inside a colour function, an -rgb triplet exists alongside it so the alpha channel can be varied."
+    "values": "Custom properties are consumed with var(). Where a property is read back inside a colour function, an -rgb triplet exists alongside it so the alpha channel can be varied.",
+    "headerSelectors": "Header rules in nox.css are written `body .skinHeader ...`. The `body` prefix lifts them above Jellyfin's own equal-specificity rules so the theme does not depend on which stylesheet the browser parses last. The selectors above are quoted in their short form for readability."
   },
 
   "default": "nox-dark",
@@ -41,7 +42,7 @@
 
     "accent": [
       { "token": "--nox-accent", "value": "#ffd700", "definedIn": ":root", "usedIn": [".btnPlay", ".itemProgressBarForeground", ".mdl-slider-background-flex-inner", ".emby-tab-button-selected"], "note": "The single brand colour. Changing this one property re-skins every accent surface in the theme." },
-      { "token": "--nox-accent-rgb", "value": "255, 215, 0", "definedIn": ":root", "usedIn": [".skinHeader .headerLeft .headerButton:first-child", ".emby-input:focus"], "note": "Triplet form so tints can be built with rgba() at any alpha without a second literal colour." },
+      { "token": "--nox-accent-rgb", "value": "255, 215, 0", "definedIn": ":root", "usedIn": ["body .skinHeader .headerHomeButton", "body .skinHeader .mainDrawerButton", ".emby-input:focus"], "note": "Triplet form so tints can be built with rgba() at any alpha without a second literal colour." },
       { "token": "--nox-on-accent", "value": "#000000", "definedIn": ":root", "usedIn": [".btnPlay", ".button-submit"], "note": "Foreground for anything filled with the accent. Gold cannot carry white text at any size." },
       { "token": "--nox-focus-ring", "value": "0 0 0 2px rgba(var(--nox-accent-rgb), 0.55)", "definedIn": ":root", "usedIn": [":focus-visible"], "note": "Keyboard focus. Translucent so it reads as a halo over both flat panels and artwork." }
     ],

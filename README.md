@@ -21,7 +21,7 @@ The `@import` must be the first rule in the box. If Jellyfin's editor already ha
 **Pinned to a release** (nothing changes under you):
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.1/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.2/nox.css');
 ```
 
 **Self-hosted** — copy `nox.css` (or `nox.min.css`) onto your server and point at it:
@@ -38,7 +38,7 @@ Hard-refresh after saving — <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>, or 
 
 | Surface | What Nox does |
 |---|---|
-| **Navigation** | Replaces the top bar with a floating black pill rail on the left: icon over label, widening on hover or keyboard focus. Below 1100px it falls back to the normal top bar. |
+| **Navigation** | Replaces the top bar with a floating black pill rail on the left: icon over label, widening on hover or keyboard focus. Below 1100px the rail is switched off and the bar keeps Jellyfin's layout with the theme's surface, hover fill and accent. |
 | **Home rows** | Poster cards at 10 × 15 rem with a 0.5 rem radius, a hover lift and shadow, progress bars in the accent, scroll arrows that appear on hover only. |
 | **Hero** | Full-width artwork in a rounded frame, a dark scrim for text contrast, the title in a display face, and the action buttons on a black plaque cut into the card. |
 | **Detail pages** | Same hero treatment, plus themed tabs, metadata, and the full action row. |
@@ -68,7 +68,19 @@ On hover, or on keyboard focus anywhere inside the rail (`:focus-within`), the r
 
 The rail places the Menu button at the top and the remaining actions — search, cast, notifications, settings, user — at the bottom, using `margin-top: auto` on the right-hand group.
 
-Below 1100px the rail is switched off entirely and section 4 restyles the normal top bar, because a fixed side rail and a phone-width viewport do not coexist.
+### Two things Jellyfin's header does that shape these rules
+
+Both were found by measuring a real page rather than by reading the stylesheet, and both produce the same symptom: the theme loads, the page retints, and the header stays exactly as Jellyfin shipped it.
+
+**The buttons are not children of the header.** Jellyfin wraps `.headerLeft` and `.headerRight` in `.headerTop`, a row-flex wrapper that also carries `.flex-grow`. A rule that turns `.skinHeader` into a column without turning `.headerTop` into one too leaves the two groups sitting side by side inside a 4.5rem box — `.headerLeft` collapses to zero width and the rail renders as an empty strip. Section 3 re-lays-out `.headerTop` as the pill's single column.
+
+**Specificity ties are decided by load order.** Jellyfin's own `.skinHeader { position: fixed; left: 0; right: 0; top: 0 }` has exactly the same specificity as a plain `.skinHeader` rule of ours, and it is served from a `<link>` in `<head>` while Custom CSS is injected as a `<style>` in the body. Whichever the browser parses last wins, so a plain selector can silently do nothing at all. Every header rule in `nox.css` is therefore written `body .skinHeader ...` — (0,1,1) against Jellyfin's (0,1,0). It wins on specificity rather than on luck, and it does so without `!important`.
+
+The header has been measured in both orders, theme-first and theme-last, and computes identically either way.
+
+### Below 1100px
+
+The rail is switched off entirely and section 4 restyles the normal top bar, because a fixed side rail and a phone-width viewport do not coexist. That bar keeps Jellyfin's layout — the buttons stay where the client's own keyboard and screen-reader order expects them — but takes the theme's surface: transparent over the top of the page, a translucent blurred surface with a hairline once the page scrolls, a round hover fill on each icon button, and the accent on whichever of Home or Menu is the leading entry.
 
 ---
 
@@ -125,7 +137,7 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
 
 | File | Purpose |
 |---|---|
-| `nox.css` | The theme. This is the file you install. ~1570 lines, 16 numbered sections. |
+| `nox.css` | The theme. This is the file you install. ~1680 lines, 17 numbered sections. |
 | `nox.min.css` | Minified build of the same file. Same rules, smaller transfer. |
 | `tokens.css` | Standalone token layer: the `:root` block, all 15 palettes and the Jellyfin bridge. Optional. |
 | `palette.json` | Every token with its value, the rule that declares it, and the selectors that consume it. Includes measured contrast ratios. |
@@ -157,7 +169,7 @@ Jellyfin Web changes its DOM between releases, and any theme that reaches into i
 - **Everything flows from tokens.** A broken layout rule cannot take the palette down with it, and a palette change cannot break layout.
 - **One BRITTLE section.** Every selector that depends on something Jellyfin has *not* promised to keep — the `--jf-palette-*` MUI bridge, the now-playing bar, settings cards, skeleton placeholders — is collected in section 16. If a Jellyfin update breaks the theme, start there. If something breaks outside section 16, it is a bug worth reporting.
 - **Fallbacks, not assumptions.** `@supports` guards for `backdrop-filter` and `color-mix()`, `forced-colors` support, and a `prefers-reduced-motion` block that disables all motion rather than merely shortening it.
-- **`!important` only where inline styles force it** — 17 declarations, each with a comment saying why. Jellyfin writes background colours onto `<body>` and the header as inline styles once a dashboard backdrop is configured, and an inline style beats any stylesheet rule.
+- **`!important` only where a stylesheet cannot win** — 17 declarations, each with a comment giving its reason. They fall into four groups: Jellyfin writes the dashboard backdrop colour onto `<body>` as an inline style; it paints the header's background inline the same way; it paints the seek and volume fills and the tooltips inline; and MUI's skeleton placeholders set `--base-color` and `--highlight-color` as inline custom properties. The reduced-motion block is the fourth — it has to beat every transition the theme declares. Everywhere else, a `body` prefix or a longer selector does the job instead.
 
 ---
 
@@ -175,8 +187,8 @@ Jellyfin Web changes its DOM between releases, and any theme that reaches into i
 
 Honest list, so you know what you are installing:
 
-1. **Not yet verified in a live Jellyfin instance.** The theme was developed and measured against a reproduction of Jellyfin Web's DOM, not against a running server. The class names, the header structure and the `title`-attribute behaviour come from Jellyfin Web's own markup, but some surfaces — most notably the video OSD, the now-playing bar and plugin-rendered panels — have not been seen rendering against real content. Expect to find one or two rough edges there.
-2. **The rail needs 1100px.** Below that, the theme uses the standard top bar. A collapsing rail at tablet width was judged worse than a good top bar.
+1. **Measured against Jellyfin Web 13.0.0, not walked through every screen.** The header markup, the button classes and the `title`-attribute behaviour come from `jellyfin-web` 13.0.0's own source and its compiled stylesheets, and the theme has been checked in a reproduction built from those exact files, in both stylesheet orders. It has also been confirmed to load in a live Jellyfin Server 12.4.0 instance. What has *not* been seen rendering against real content: the video OSD, the now-playing bar and plugin-rendered panels. Expect one or two rough edges there.
+2. **The rail needs 1100px.** Below that width the theme keeps Jellyfin's horizontal bar rather than squeezing a rail into it. That bar is themed, but its layout is still Jellyfin's, so a window narrower than 1100px will look less changed than a wider one. If the header still reads as stock, check `innerWidth` in the console before assuming the theme failed.
 3. **Labels depend on `title` attributes.** Where Jellyfin does not set one on a header button, that button shows its icon only.
 4. **Home-screen hero is conditional.** Nox styles a hero when one exists in the DOM. Stock Jellyfin's home screen may not render one without a plugin that adds hero artwork; the hero styling is exercised on detail pages regardless.
 5. **No external fonts or images by default.** Deliberate. If you install the optional mono `@import`, Google Fonts becomes a runtime dependency of your server's login screen.
@@ -232,6 +244,28 @@ message. Delete everything above it.
 Paste the **entire contents** of `nox.css` into the box instead of importing it.
 No network request, no import-ordering rule, no CDN cache. If step 1 gave you a
 red outline, this works. Open the file, select all, paste, save, hard-refresh.
+
+### The page retinted but the header is still Jellyfin's
+
+The theme is applied — this is not an install problem. Three causes, in order of
+likelihood.
+
+**You are under 1100px.** The rail only exists at 1100px and wider; below that
+the theme deliberately keeps Jellyfin's horizontal bar. Widen the window and the
+pill should appear. To see what your browser actually reports, type `innerWidth`
+in the console.
+
+**You are on 0.1.1 or earlier.** In those versions every header rule had the same
+specificity as Jellyfin's own, so whether it applied at all came down to which
+stylesheet the browser parsed last — and even when it did apply, the rail
+collapsed to an empty strip because Jellyfin wraps the header buttons in a
+wrapper the theme did not handle. Both are fixed in 0.1.2. Update, then
+hard-refresh.
+
+**A stale stylesheet.** The rail's width, radius and background all live in the
+same rules, so a cached older `nox.css` shows the old behaviour with the new
+palette. Hard-refresh, and if you install through jsDelivr, purge the cache for
+the tag you pinned.
 
 ### Self-hosting
 
