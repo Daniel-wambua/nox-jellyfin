@@ -13,7 +13,7 @@
  * Jellyfin Web → Dashboard → General → Custom CSS. Either paste this file
  * ABOVE the contents of nox.css, or add this line above your `@import`:
  *
- *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/tokens.css');
+ *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/tokens.css');
  *
  * An `@import` must be the first rule in the box. Declarations here are
  * plain custom properties on `:root`, so later rules win — no `!important`

@@ -1,6 +1,6 @@
 {
   "name": "Nox",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Canonical token source for the Nox Jellyfin theme. Every colour, radius, duration and metric the theme uses is declared here once and consumed by nox.css. Nothing is estimated: each entry names the rule that declares it and the selectors in nox.css that read it.",
   "license": "MIT",
 

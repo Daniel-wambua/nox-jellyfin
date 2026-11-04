@@ -10,18 +10,24 @@ Built entirely from standard CSS custom properties. One import line, no plugins,
 
 Jellyfin Web → **Dashboard → General → Custom CSS**, and paste one of these.
 
-**From jsDelivr** (recommended — you get updates):
+**Pinned to a release** (recommended):
+
+```css
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css');
+```
+
+The `@import` must be the first rule in the box. If Jellyfin's editor already has something above it, move it up or the import is silently dropped.
+
+**Tracking the branch** — `@main` follows the head of the repository, but jsDelivr caches a branch ref for up to twelve hours and purging it does not reliably reach every edge. A stale branch copy loads silently: no console error, no failed request, just an older build of the theme. If the theme applies but looks like a version you have already replaced, switch to the pinned release above:
 
 ```css
 @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css');
 ```
 
-The `@import` must be the first rule in the box. If Jellyfin's editor already has something above it, move it up or the import is silently dropped.
-
-**Pinned to a release** (nothing changes under you):
+**Pinned to an exact commit** — cannot go stale in either direction:
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.2/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@1d89e4fcbf0c62c087c724569386768122f92787/nox.css');
 ```
 
 **Self-hosted** — copy `nox.css` (or `nox.min.css`) onto your server and point at it:
@@ -226,7 +232,7 @@ If you do get the red outline, the box works and the problem is step 2 or 3.
 Open this in a new tab:
 
 ```
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css
 ```
 
 It should display the stylesheet as plain text. If it 404s, hangs, or is blocked,
@@ -247,8 +253,22 @@ red outline, this works. Open the file, select all, paste, save, hard-refresh.
 
 ### The page retinted but the header is still Jellyfin's
 
-The theme is applied — this is not an install problem. Three causes, in order of
+The theme is applied — this is not an install problem. Four causes, in order of
 likelihood.
+
+**You are on a stale CDN copy.** If you import through `@main`, jsDelivr can keep
+serving an older build of the file for up to twelve hours after a change, and the
+symptom is indistinguishable from a broken theme: the palette updates, the header
+does not. There is no error anywhere. Compare what your browser actually has
+against jsDelivr by opening both in new tabs and checking the file size —
+the current build is 44,425 bytes:
+
+```
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css
+```
+
+If the `@main` copy is smaller, switch the import to `@0.1.2`.
 
 **You are under 1100px.** The rail only exists at 1100px and wider; below that
 the theme deliberately keeps Jellyfin's horizontal bar. Widen the window and the
@@ -259,7 +279,7 @@ in the console.
 specificity as Jellyfin's own, so whether it applied at all came down to which
 stylesheet the browser parsed last — and even when it did apply, the rail
 collapsed to an empty strip because Jellyfin wraps the header buttons in a
-wrapper the theme did not handle. Both are fixed in 0.1.2. Update, then
+wrapper the theme did not handle. Both are fixed in 0.1.2 and later. Update, then
 hard-refresh.
 
 **A stale stylesheet.** The rail's width, radius and background all live in the

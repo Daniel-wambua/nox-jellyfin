@@ -7,9 +7,11 @@
  * Jellyfin Web → Dashboard → General → Custom CSS, then paste either the whole
  * of this file, or this one line and let the CDN serve it:
  *
- *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css');
+ *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.3/nox.css');
  *
- * The @import must be the first rule in the box.
+ * The @import must be the first rule in the box. Prefer a release tag over
+ * @main: jsDelivr caches a branch ref for up to twelve hours and can serve an
+ * older build without any error you could notice.
  *
  * ── Optional font ──────────────────────────────────────────────────────────
  * Nox ships no webfont and makes no request to a third-party CDN. The stack
