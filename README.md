@@ -1,335 +1,206 @@
 # Nox
 
-A dark theme for **Jellyfin Web**, built from design tokens measured on a modern
-streaming UI and re-expressed as CSS for Jellyfin's own class structure.
+A dark theme for Jellyfin Web. Near-black page, a floating black navigation rail that expands on hover, gold accent, rounded poster cards, scrimmed heroes, and a login screen that matches the rest of the client.
 
-```
-nox.css        the theme — self-contained, this is the only file Jellyfin needs
-nox.min.css    the same stylesheet on one line
-tokens.css     the token layer, standalone (for reference / forking)
-palette.json   every token with the stylesheet + selector it was sampled from
-manifest.json  plugin skeleton
-```
-
-No artwork, logos, fonts or stylesheets were copied from the reference. Every
-value in `palette.json` cites where it came from.
+Built entirely from standard CSS custom properties. One import line, no plugins, no build step, no external assets.
 
 ---
 
 ## Install
 
-### A. One line (recommended)
+Jellyfin Web → **Dashboard → General → Custom CSS**, and paste one of these.
 
-Dashboard → **General → Custom CSS**:
+**From jsDelivr** (recommended — you get updates):
 
 ```css
 @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css');
 ```
 
-Save, then hard-reload the web client (`Ctrl`/`Cmd` + `Shift` + `R`).
+The `@import` must be the first rule in the box. If Jellyfin's editor already has something above it, move it up or the import is silently dropped.
 
-That is the whole install. The `@import` must be the **first rule** in the box —
-anything before it (other than comments) makes browsers drop it.
+**Pinned to a release** (nothing changes under you):
 
-> **Pin a version instead of `@main`.** Branch refs on jsDelivr are cached for
-> up to 12 hours, and `@main` follows whatever you last pushed. For a stable
-> install your users can rely on:
-> ```css
-> @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.0/nox.css');
-> ```
-> Tags are immutable and cached permanently, so they are also faster.
+```css
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.1/nox.css');
+```
 
-### B. Paste
+**Self-hosted** — copy `nox.css` (or `nox.min.css`) onto your server and point at it:
 
-Copy the entire contents of `nox.css` into the Custom CSS box. Use this when you
-want to edit the theme locally or run on a server with no outbound internet.
+```css
+@import url('https://your.server/path/nox.css');
+```
 
-### C. As a plugin theme
+Hard-refresh after saving — <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> on macOS. Jellyfin caches the stylesheet aggressively and a normal reload will often keep the old one.
 
-1. Create `<config>/plugins/Nox_0.1.0/`
-2. Copy `nox.css`, `tokens.css`, `nox.min.css` and `manifest.json` into it.
-3. Replace the placeholder `guid` in `manifest.json` with a real UUID
-   (`uuidgen`) before publishing — the all-zero GUID is a placeholder and two
-   plugins sharing it will collide.
-4. Restart Jellyfin. The theme appears under **Dashboard → General → Theme**.
+---
+
+## What it covers
+
+| Surface | What Nox does |
+|---|---|
+| **Navigation** | Replaces the top bar with a floating black pill rail on the left: icon over label, widening on hover or keyboard focus. Below 1100px it falls back to the normal top bar. |
+| **Home rows** | Poster cards at 10 × 15 rem with a 0.5 rem radius, a hover lift and shadow, progress bars in the accent, scroll arrows that appear on hover only. |
+| **Hero** | Full-width artwork in a rounded frame, a dark scrim for text contrast, the title in a display face, and the action buttons on a black plaque cut into the card. |
+| **Detail pages** | Same hero treatment, plus themed tabs, metadata, and the full action row. |
+| **Player** | Gradient control bar, themed seek bar and volume, chapter thumbnails, subtitle styling. |
+| **Dialogs** | Rounded, blurred backdrop, themed menus, action sheets, toasts and tooltips. |
+| **Forms** | Inputs, selects, checkboxes and switches restyled for both dark and light palettes. |
+| **Login & setup** | The login page and first-run wizard are themed, not left as stock Jellyfin. |
+| **Empty states** | Themed, including the section headings above them. |
+
+---
+
+## The navigation rail
+
+This is the part that changes the shape of the client, so it is worth explaining.
+
+Above 1100px wide, `.skinHeader` stops being a bar across the top and becomes a fixed pill inset 0.75rem from the top, bottom and left edges, 4.5rem wide, with a 1.25rem radius and a shadow on all sides — it reads as a physical object floating over the page rather than a strip stuck to the top.
+
+Each button is laid out as a column: icon on top, label underneath. The label is not markup Nox adds — Jellyfin does not expose one. It comes from the `title` attribute the client already writes onto every header button for accessibility, surfaced through a pseudo-element:
+
+```css
+.headerButton::after { content: attr(title); }
+```
+
+The `title` attribute is Jellyfin's own localised string, so the labels are translated on a non-English server with no work from the theme. The trade-off is that labels can only appear where Jellyfin sets `title`; if a future version drops it on a button, that one button shows its icon alone and the rest are unaffected.
+
+On hover, or on keyboard focus anywhere inside the rail (`:focus-within`), the rail widens to 10.25rem and the labels fade in. The page's left padding is derived from the collapsed width, so content never shifts when the rail opens.
+
+The rail places the Menu button at the top and the remaining actions — search, cast, notifications, settings, user — at the bottom, using `margin-top: auto` on the right-hand group.
+
+Below 1100px the rail is switched off entirely and section 4 restyles the normal top bar, because a fixed side rail and a phone-width viewport do not coexist.
+
+---
+
+## Customising
 
 ### Change the accent
 
-One property drives every accent surface:
+Two properties, near the top of `nox.css` or in `tokens.css`:
 
 ```css
-:root { --nox-accent: #f44336; --nox-accent-rgb: 244,67,54; }
+:root {
+  --nox-accent: #ffd700;          /* the colour itself */
+  --nox-accent-rgb: 255, 215, 0;  /* the same colour as a triplet, for tints */
+}
 ```
 
-Update **both** — the focus ring composes `rgba()` from `--nox-accent-rgb`, and
-`box-shadow` cannot use `color-mix()` in every engine Jellyfin runs in.
+Every accent surface — play buttons, tab underlines, progress fills, seek bar, focus rings, the highlighted menu item — reads from those two. `--nox-accent-rgb` exists separately because tinted states are built with `rgba(var(--nox-accent-rgb), 0.12)`, which cannot take a hex value. Keep the two in sync.
 
-Append it to your Custom CSS *after* the import:
-
-```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css');
-:root { --nox-accent: #2196f3; --nox-accent-rgb: 33,150,243; }
-```
+`--nox-on-accent` is the text colour used *on* an accent fill. It is black by default because gold cannot carry white text at any size. Check the contrast before changing it (see [Accessibility](#accessibility)).
 
 ### Switch palette
 
-Add a class to `<html>` — a small custom-JS snippet, or your reverse proxy:
+Fourteen alternates ship alongside the default. Apply one as a class on `<html>` — or, if you cannot add a class, paste the block from `tokens.css` into Custom CSS with `:root` in place of the class name:
 
-```js
-document.documentElement.classList.add('nox-midnight');
+| Class | Mood |
+|---|---|
+| *(default)* | Warm near-black, gold |
+| `.nox-charcoal` | Neutral greys, gold |
+| `.nox-evergreen` | Deep green, mint |
+| `.nox-midnight` | Navy, ice blue |
+| `.nox-aurora` | Indigo, violet |
+| `.nox-obsidian-luxury` | Warm black, antique gold |
+| `.nox-nordic-frost` | Cool slate, pale cyan |
+| `.nox-slate-corporate` | Steel, corporate blue |
+| `.nox-royal-amethyst` | Plum, orchid |
+| `.nox-warm-terracotta` | Brown, terracotta |
+| `.nox-monochrome-pro` | Pure greyscale |
+| `.nox-light` | Light, dark gold |
+| `.nox-oyster` | Warm off-white, dark gold |
+| `.nox-arctic-dawn` | Blue-white, sky blue |
+| `.nox-enterprise-light` | Neutral white, blue |
+
+### Retune the layout
+
+Everything spatial is a token too: `--nox-radius-card`, `--nox-card-width`, `--nox-card-gap`, `--nox-rail-w`, `--nox-rail-w-open`, `--nox-dur-rail`. Override any of them in Custom CSS after the import and the theme follows.
+
+### Optional mono font
+
+The theme asks for Roboto Mono and falls back to the platform's monospace. It does not load the web font: a media server should not need a Google Fonts request to render its own login screen. If you want it anyway, uncomment the `@import` in `tokens.css` and put it at the very top of the CSS box, above everything else.
+
+---
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `nox.css` | The theme. This is the file you install. ~1570 lines, 16 numbered sections. |
+| `nox.min.css` | Minified build of the same file. Same rules, smaller transfer. |
+| `tokens.css` | Standalone token layer: the `:root` block, all 15 palettes and the Jellyfin bridge. Optional. |
+| `palette.json` | Every token with its value, the rule that declares it, and the selectors that consume it. Includes measured contrast ratios. |
+| `manifest.json` | Metadata, palette list and file map. |
+| `screenshots.md` | A checklist for verifying a build by hand. |
+| `LICENSE` | MIT. |
+
+`nox.css` is organised in numbered sections so you can jump straight to what you want to change:
+
 ```
-
-Fourteen alternates ship in `nox.css` section 0: `nox-light`, `nox-charcoal`,
-`nox-evergreen`, `nox-midnight`, `nox-oyster`, `nox-aurora`,
-`nox-obsidian-luxury`, `nox-arctic-dawn`, `nox-nordic-frost`,
-`nox-slate-corporate`, `nox-royal-amethyst`, `nox-warm-terracotta`,
-`nox-monochrome-pro`, `nox-enterprise-light`.
-
----
-
-## Updating the CDN copy
-
-jsDelivr caches branch refs (`@main`) for up to 12 hours. After a push, you can
-force a refresh instead of waiting:
-
-```bash
-curl https://purge.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
+ 0. Design tokens          9. Detail page
+ 1. Global base           10. Video player / OSD
+ 2. Header base           11. Dialogs, toasts, menus
+ 3. Navigation rail       12. Forms, inputs, buttons
+ 4. Top bar (<1100px)     13. Login and first-run setup
+ 5. Section headings      14. Responsive
+ 6. Hero and backdrop     15. Motion, fallbacks, accessibility
+ 7. Carousel rows         16. BRITTLE  ← fragile selectors, all in one place
+ 8. Cards
 ```
-
-Or cut a release and point the import at the tag — tags never go stale:
-
-```bash
-git tag 0.1.1 && git push origin 0.1.1
-```
-
----
-
-## Coverage
-
-| Area | Status | What Nox does |
-|---|---|---|
-| Global base | ✅ | Near-black page, display + body font stack, accent selection, thin themed page scrollbar, accent focus rings, reduced-motion guard |
-| Top nav | ✅ | Transparent header, blur + hairline border once scrolled, icon spacing and hover wash, logo area neutralised |
-| Home hero | ⚠️ partial | Gradient scrim, meta panel with the sampled outline notch, Watch/Details pill pair. **Needs a hero to exist** — see gaps |
-| Home carousel rows | ✅ | Reference gap/padding/margins, smooth scroll, hidden-until-hover scrollbar, hover-revealed circular arrows, optional x-proximity snap |
-| Cards | ✅ | Rounded poster, 2:3 ratio, hover shadow + subtle lift, 2-line clamped title, footer gradient, accent progress bar |
-| Detail page | ✅ | Backdrop with scrim, hierarchy, Play + secondary pill buttons, rounded episode/season list, accent tab underline |
-| Player | ✅ | Minimal OSD, gradient control bar, accent seek fill, mono subtitles, themed stats/quality badges |
-| Dialogs / toasts / menus | ✅ | Sampled overlay (`rgba(0,0,0,.7)` + `blur(10px) grayscale(.2)`), raised dialog card, themed toasts, drawer, tooltips |
-| Login | ✅ | Centred raised card, display-face heading, themed inputs |
-| Forms / inputs | ✅ | Themed text fields, selects, checkboxes, switches, submit buttons |
-| Responsive | ✅ | 375 px and 1920 px tuned; touch devices drop hover affordances |
-
----
-
-## Jellyfin classes targeted, and why
-
-Every selector below is a stable upstream hook. Nothing here is generated at
-runtime or hashed.
-
-### Global
-
-| Selector | Why |
-|---|---|
-| `html`, `body` | Page background and the font stack cascade from here |
-| `::selection` | The reference marks selection with the accent |
-| `:focus-visible` | Keyboard ring — the reference uses a 2 px translucent accent halo |
-| `::-webkit-scrollbar*` | Page scrollbar; the reference hides scrollbars entirely (see gaps) |
-| `h1`–`h6`, `.pageTitle`, `.sectionTitleText` | Display-face headings |
-| `.backgroundContainer`, `.backdropContainer`, `.backdropImage` | Pages that paint a user backdrop behind the app |
-
-### Header
-
-| Selector | Why |
-|---|---|
-| `.skinHeader` | The whole top bar; transparency and transition live here |
-| `.skinHeader.headroom--not-top` | Headroom.js scroll state — the blur trigger |
-| `.skinHeader-withBackground` | Pages with no hero must not float a transparent bar |
-| `.pageTitle`, `.pageTitleWithDefaultLogo` | Logo/title sizing; the default Jellyfin logo image is removed so no upstream artwork is involved |
-| `.headerButton`, `.headerButtonIcon`, `.headerRight` | Icon size, spacing, hover wash |
-
-### Home
-
-| Selector | Why |
-|---|---|
-| `.verticalSection`, `.sectionTitleContainer`, `.sectionTitle`, `.sectionTitleText` | Row structure and the 1.7 rem / 27.2 px section heading |
-| `.emby-scroller-container`, `.emby-scroller`, `.scrollSlider`, `.itemsContainer` | The horizontal row: gap, padding, scrollbar hiding, snap |
-| `.emby-scrollbuttons`, `.emby-scrollbuttons-button` | Hover-revealed arrows |
-| `.homePage .verticalSection:first-child` | Used as the hero host when no plugin renders `.nox-hero` |
-
-### Cards
-
-| Selector | Why |
-|---|---|
-| `.cardBox` | Snap target and outer spacing |
-| `.card`, `.cardScalable`, `.cardImageContainer`, `.cardPadder-poster` | Radius, ratio, hover shadow, hover lift, image brightness |
-| `.cardText`, `.cardText-first`, `.cardText-secondary`, `.cardText-icon` | Title clamp, muted metadata, star colour |
-| `.innerCardFooter`, `.cardIndicators`, `.playedIndicator` | Overlay strip and badges |
-| `.cardOverlayButton`, `.cardOverlayContainer` | Play/info/favourite overlay buttons |
-| `.itemProgressBar`, `.itemProgressBarForeground`, `.itemProgressBar-denied` | Resume bar — the reference's `.3rem` track and radius |
-
-### Detail
-
-| Selector | Why |
-|---|---|
-| `.detailPageWrapperContainer`, `.detailPagePrimaryContainer`, `.backdropContainer`, `.detailPageContent` | Backdrop hero and the scrim that keeps text legible over arbitrary artwork |
-| `.detailLogo`, `.itemName`, `.itemMiscInfo`, `.mediaInfoItem`, `.itemOverview` | Hierarchy and colour |
-| `.detailButtons`, `.btnPlay`, `.detailButton`, `.mainDetailButtons` | Pill action row |
-| `.detailSection`, `.itemDetailsGroup`, `.listItem*`, `.emby-tabs`, `.emby-tab-button` | Seasons, episodes, related items |
-
-### Player
-
-| Selector | Why |
-|---|---|
-| `.videoOsdBottom`, `.osdControls`, `.osdTitle`, `.osdTextContainer` | Chrome and typography |
-| `.mdl-slider-background-flex*`, `.sliderBubble`, `.sliderMarker` | Seek/volume fill in the accent |
-| `.chapterThumbContainer`, `.chapterThumbImage`, `.chapterThumbText` | Chapter previews |
-| `.upNextContainer`, `.upNextDialog`, `.videoSubtitles`, `.playerStats` | Up-next card, subtitles, stats overlay |
-
-### Dialogs, forms, login
-
-| Selector | Why |
-|---|---|
-| `.dialogBackdrop`, `.dialog`, `.formDialog`, `.dialogHeader*`, `.dialogFooter`, `.dialogContentInner` | The sampled overlay + raised card treatment |
-| `.toast`, `.toastContainer`, `.actionSheet*`, `.navMenuOption`, `.mainDrawer`, `.tooltip` | Toasts, popup menus, drawer, tooltips |
-| `.emby-input`, `.emby-textarea`, `.emby-select`, `.emby-checkbox`, `.mdl-switch*`, `.emby-button`, `.raised`, `.button-flat` | Form controls |
-| `.loginPage`, `.readOnlyContent`, `.btnForgotPassword` | Login card |
-| `.settingsCard`, `.paperList`, `.searchfields`, `.countIndicator`, `.starIcon` | Settings, search, badges, ratings |
-
----
-
-## What CSS cannot change
-
-Stated plainly, because these are the places Nox will visibly differ from the
-reference no matter how the tokens are tuned.
-
-1. **The navigation rail.** The reference's navigation is a fixed *left vertical
-   rail*. Jellyfin's `.skinHeader` is a horizontal top bar whose children are
-   positioned by JS. CSS can restyle the bar, and it can technically rotate the
-   children into a column — but doing so detaches the drawer button and the
-   search field from where `layoutManager` expects them, and collides with the
-   mobile drawer. An opt-in version is included commented-out in section 14d.
-   Making the rail real needs JS, not CSS.
-
-2. **A hero section on the home screen.** Jellyfin has no hero component. Nox
-   can style one into existence *if something renders it*, or approximate it
-   from the first home row when the server has backdrop images. Without either,
-   the home screen opens straight into a row.
-
-3. **Carousel paging.** The reference's rows scroll freely with no arrows and no
-   snap. Nox can add `scroll-snap` and reveal Jellyfin's arrow buttons, but it
-   cannot add paging logic, inertia tuning, or drag-to-scroll.
-
-4. **Component structure.** Card internals, dialog internals and the OSD are
-   built at runtime by `jellyfin-web`. Nox can only colour what those functions
-   emit. Reordering or recomposing them is a JS problem.
-
-5. **Hiding scrollbars globally.** The reference hides every scrollbar. Doing
-   that to Jellyfin's document makes long libraries feel broken, so Nox keeps a
-   thin themed page scrollbar and hides scrollbars only inside horizontal rows.
-   This is a deliberate, documented deviation.
-
-6. **Motion on route changes.** Jellyfin's page transitions are handled in JS.
-   Nox styles hover/press/focus states only.
-
-### Optional JS ideas (a later phase, not in this release)
-
-- Inject a real hero component on the home screen from the first backdrop item.
-- Add drag-to-scroll with inertia to `.emby-scroller`.
-- Add arrow-button paging that scrolls by exactly one viewport.
-- Mirror a `data-nox-theme` attribute onto `<html>` so the palette can follow
-  the user's Jellyfin display-mode setting.
-- Drive `--nox-accent` from a plugin configuration page, mirroring how the
-  reference exposes the accent as a user preference rather than a brand colour.
 
 ---
 
 ## Update resilience
 
-- **Stable hooks only.** Everything in sections 1–13 targets class names
-  Jellyfin has kept stable across the 10.x line. No hashed names, no
-  `nth-child` chains into generated markup.
-- **One brittle section.** Section 14 of `nox.css` collects everything
-  version-fragile: the `--jf-palette-*` bridge, the Headroom.js states, the
-  `data-type="backdrop"` hero host, the optional rail, and the runtime-built OSD
-  internals. **If a Jellyfin update breaks Nox, comment out section 14 first**
-  and re-test. The theme is fully usable without any of it.
-- **`!important` is rare and justified.** It appears three times in active code:
-  1. `.skinHeader.headroom--not-top` background — Jellyfin writes an inline
-     `background-color` on the header when a backdrop is configured.
-  2. The `@supports not (backdrop-filter)` fallback — must beat the blur rule.
-  3. `prefers-reduced-motion` — Jellyfin's own stylesheets declare transitions
-     on nearly every interactive element and load after Custom CSS in some
-     builds.
-  Each carries an inline comment explaining it.
+Jellyfin Web changes its DOM between releases, and any theme that reaches into it will eventually break somewhere. Nox is built to break *locally and visibly* rather than globally:
+
+- **Class hooks only** — no `#id` selectors, no `> :nth-child()` chains, no attribute selectors on generated markup.
+- **Everything flows from tokens.** A broken layout rule cannot take the palette down with it, and a palette change cannot break layout.
+- **One BRITTLE section.** Every selector that depends on something Jellyfin has *not* promised to keep — the `--jf-palette-*` MUI bridge, the now-playing bar, settings cards, skeleton placeholders — is collected in section 16. If a Jellyfin update breaks the theme, start there. If something breaks outside section 16, it is a bug worth reporting.
+- **Fallbacks, not assumptions.** `@supports` guards for `backdrop-filter` and `color-mix()`, `forced-colors` support, and a `prefers-reduced-motion` block that disables all motion rather than merely shortening it.
+- **`!important` only where inline styles force it** — 17 declarations, each with a comment saying why. Jellyfin writes background colours onto `<body>` and the header as inline styles once a dashboard backdrop is configured, and an inline style beats any stylesheet rule.
+
+---
+
+## Accessibility
+
+- **Focus is visible everywhere.** `:focus-visible` draws a 2px translucent accent ring that works over flat panels and artwork alike.
+- **The rail opens on keyboard focus**, not just hover, via `:focus-within` — the labels are reachable without a mouse.
+- **Reduced motion is honoured.** All transitions and animations drop to 0.001ms, and the card hover transform is removed outright.
+- **Forced-colours mode** is left to the OS: Nox gives up its own colours there rather than fighting the user's contrast settings.
+- **Contrast**, measured from the shipped hex values for the default palette: body text 17.5:1, secondary text 8.2:1, accent on background 12.5:1, accent fill against its own text 15.0:1. `--nox-muted` is 3.2:1 and is used only for large text and non-text UI. The light palettes are all above 4.5:1 on text; full figures are in `palette.json`.
 
 ---
 
 ## Known gaps
 
-- **The hero is conditional.** On a server with no backdrop images, the home
-  screen has no hero band. See "What CSS cannot change".
-- **Left rail not enabled by default.** Available commented-out; enabling it is
-  a deliberate trade, not an oversight.
-- **Accent default is a judgement call.** The reference does not ship a fixed
-  brand accent — `--ascent-color` is a runtime user preference. Its CSS root
-  default is `gold`, its light-mode root default is `blue`, and the live headless
-  session resolved to `#2196f3`. The brief asked for red; Nox therefore defaults
-  to the `Red` (`#f44336`) option from the reference's own accent picker. For
-  fidelity to the *sampled default* instead, set `--nox-accent: gold` (or
-  `#2196f3` for the live value). Documented rather than silently "corrected".
-- **Card hover includes a scale.** The reference only swaps shadow and title
-  colour. A restrained 2 % lift was added deliberately; delete the
-  `.card:hover` transform rule for exact upstream behaviour.
-- **Scroll snap is authored, not sampled.** The reference has no `scroll-snap`
-  anywhere. Delete the two marked rules in section 5 for upstream behaviour.
-- **Hero gradient is authored.** The reference paints no CSS gradient over its
-  hero — it relies on the artwork. Jellyfin backdrops are arbitrary user images,
-  so Nox adds a scrim anchored to the sampled `--bg-color`.
-- **`color-mix()` is required.** A `@supports` fallback exists, but on a very old
-  client the derived surfaces collapse to flat sampled colours and lose subtlety.
-- **Focus ring is 1 px solid, not 2 px translucent.** A deliberate contrast
-  choice against a near-black page; noted in `nox.css` section 1.
-- **No light-mode auto-switching.** The light palettes ship as classes you apply
-  manually. Automatic switching needs JS.
-- **Not yet rendered in a live Jellyfin instance.** Values are verified against
-  the reference by computed style and against the theme by static review. The
-  side-by-side checklist in `screenshots.md` is the manual step.
+Honest list, so you know what you are installing:
+
+1. **Not yet verified in a live Jellyfin instance.** The theme was developed and measured against a reproduction of Jellyfin Web's DOM, not against a running server. The class names, the header structure and the `title`-attribute behaviour come from Jellyfin Web's own markup, but some surfaces — most notably the video OSD, the now-playing bar and plugin-rendered panels — have not been seen rendering against real content. Expect to find one or two rough edges there.
+2. **The rail needs 1100px.** Below that, the theme uses the standard top bar. A collapsing rail at tablet width was judged worse than a good top bar.
+3. **Labels depend on `title` attributes.** Where Jellyfin does not set one on a header button, that button shows its icon only.
+4. **Home-screen hero is conditional.** Nox styles a hero when one exists in the DOM. Stock Jellyfin's home screen may not render one without a plugin that adds hero artwork; the hero styling is exercised on detail pages regardless.
+5. **No external fonts or images by default.** Deliberate. If you install the optional mono `@import`, Google Fonts becomes a runtime dependency of your server's login screen.
+6. **Light palettes are secondary.** They work, and they pass contrast, but the theme's spacing and shadow choices were tuned for dark surfaces first.
 
 ---
 
-## Verify
+## Verifying an install
 
-1. **Install check** — add the `@import` line, save, hard-reload. The login
-   screen should be a raised dark card on a `#1b1919` page, and the header
-   should be transparent until you scroll.
-2. **Scroll check** — scroll the home screen. The header should gain a blur and
-   a hairline border once it leaves the top, and lose them at the top.
-3. **Hover check** — hover a poster. It should lift, gain a light shadow, and
-   its title should stay `#a4b3c9`.
-4. **Player check** — start playback, move the mouse. The control bar should be
-   a black gradient with a red seek fill; subtitles should render in Roboto Mono
-   where that font is installed.
-5. **Keyboard check** — `Tab` through the header and a card row. Every stop
-   should show a red ring with a soft halo, and the row arrows should appear.
-6. **Contrast check** — body text (`#fff` on `#1b1919`) and secondary text
-   (`#a4b3c9` on `#1b1919`) both clear 4.5:1. Muted text (`#576b87` on `#1b1919`)
-   is roughly 4.0:1 and is used for metadata only, never for body copy.
-7. **Reduced motion** — enable it in the OS, reload. Card lift, header
-   transition and scroll behaviour should all stop.
+After saving the CSS and hard-refreshing:
 
-See [`screenshots.md`](screenshots.md) for the full side-by-side shot list and
-the test matrix.
+1. The page background is `#1b1919`, not Jellyfin's default blue-grey.
+2. Above 1100px the header is a black pill on the left, not a bar across the top.
+3. Hovering that pill widens it and reveals labels under each icon.
+4. Play buttons and progress bars are gold, not the default accent.
+5. Open a library item — the artwork sits in a rounded frame with the action buttons on a black plaque.
+6. Sign out — the login screen is themed too, including the submit button.
+
+If none of that happened, the `@import` was not the first rule in the box, or the browser served a cached stylesheet.
 
 ---
-
-## Credits
-
-Design tokens were measured from [rivestream.ru](https://rivestream.ru/) for
-study. No assets, code or stylesheets were copied — only measurements, which are
-facts about a design and are not themselves copyrightable. Nox's own name,
-structure and CSS are original.
 
 ## License
 
-MIT. Jellyfin is licensed separately; Nox ships no Jellyfin code.
+MIT — see [LICENSE](LICENSE).
+
+Nox is an independent theme. It contains no third-party artwork, fonts, logos or stylesheet code; the palette and measurements are its own.

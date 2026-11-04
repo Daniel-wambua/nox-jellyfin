@@ -1,205 +1,165 @@
-# Nox — screenshot shot list
+# Nox — visual verification checklist
 
-Capture both sides at the **same viewport** so pairs are directly comparable.
-Recommended settings:
+A manual pass for confirming a build looks right. The theme was developed against
+measured computed styles rather than screenshots, so these captures exist to catch
+the things measurement cannot: an overlap, a colour that reads wrong against real
+artwork, a label that clips.
 
-- Viewport: **1920 × 1080** for desktop, **375 × 812** for mobile.
-- Device pixel ratio: **1** (so px measurements overlay cleanly).
-- Browser zoom: **100 %**.
-- Reference side: force dark mode before capturing
-  (`chrome://flags` → force dark, or DevTools → Rendering → *Emulate
-  prefers-color-scheme: dark*, then reload).
-- Jellyfin side: fresh profile, no browser extensions, same
-  `prefers-reduced-motion` state as the reference capture.
-
-Name files `NN-area--side--viewport.png`, e.g. `04-card-hover--rive--1920.png`.
+Capture at **1920 × 1080**, DPR 1, in a browser profile with no extensions. Name
+files `nox-<page>-<state>.png` and keep them out of the repo — `.gitignore`
+already excludes `*.png` and `screenshots/`.
 
 ---
 
-## A. Desktop pairs (1920 × 1080)
+## Before you start
 
-### 01 — Home hero
-| | |
-|---|---|
-| **Capture** | Top of the home screen, first paint, unscrolled |
-| **Reference** | `https://rivestream.ru/` |
-| **Compare** | Hero band height (reference `90dvh`); corner radius on the hero frame (`2rem` / 32 px); whether the nav is transparent over the art; gradient direction and where it reaches full page background; title position and clamp |
-| **Reference measurements** | hero height `90dvh`; carousel `80dvh`, `max-width calc(100vw - 5rem)` (1840 px at 1920), `margin 1rem 0 0`, radius `2rem`; meta panel width `20rem` / 320 px, radius `1.5rem` / 24 px, `margin-bottom:-2.5rem`, `outline:.7rem solid var(--bg-color); outline-offset:-1px` |
-
-### 02 — Hero meta panel (close crop)
-| | |
-|---|---|
-| **Capture** | 600 × 400 crop around the meta panel |
-| **Compare** | The notch: the panel is outlined, not padded, so the page background reads as a cut-out. Radius `1.5rem`. Meta row gap `.7rem`, colour `--primary-2` (`#576b87`), size `1rem` |
-| **Expected delta** | Jellyfin has no hero component. If no hero renders, this shot is *missing* on the Nox side — record it as a gap, not a failure |
-
-### 03 — Carousel row
-| | |
-|---|---|
-| **Capture** | One full row of posters, left edge visible |
-| **Compare** | Row gap `1rem`; row padding `.7rem`; row margin `.3rem .5rem 1.3rem`; poster width `10rem` / 160 px; poster height `15rem` / 240 px; corner radius `.5rem` / 8 px; whether arrows are visible (reference: never; Nox: on hover only); whether a scrollbar is visible (reference: never) |
-
-### 04 — Card hover
-| | |
-|---|---|
-| **Capture** | Same poster, rest vs hover, two frames |
-| **Compare** | Shadow `0 1px 2px var(--primary-3)`; title colour → `--primary-3`; whether the poster moves |
-| **Expected delta** | Nox adds a 2 % scale + 2 px lift. The reference does not move the poster at all. Note this explicitly in the write-up |
-
-### 05 — Resume progress bar
-| | |
-|---|---|
-| **Capture** | Close crop of a partially-watched poster |
-| **Compare** | Bar height `.3rem`; radius `.3rem`; track `--primary-2`; fill colour and position (absolute, left `0`) |
-
-### 06 — Section heading
-| | |
-|---|---|
-| **Capture** | 800 × 160 crop containing one row heading |
-| **Compare** | Size `1.7rem` / 27.2 px; colour `--primary-3` / `#a4b3c9`; weight 600; family (reference resolves to Bricolage Grotesque, Nox falls back unless the optional `@import` is uncommented); letter spacing `-.01em` |
-
-### 07 — Header at rest vs scrolled
-| | |
-|---|---|
-| **Capture** | Two frames: page top, and after ~400 px of scroll |
-| **Compare** | At rest: transparent, no border. Scrolled: blurred, hairline border, background blended toward the page colour |
-| **Expected delta** | The reference's navigation is a fixed *left rail*; Jellyfin's is a top bar. The screenshot will differ structurally. Compare *treatment* (the `--primary-1` panel, radius `.5rem`, 1 rem gap, 1.3 rem icons), not position |
-
-### 08 — Detail page top
-| | |
-|---|---|
-| **Capture** | Top of a movie detail page |
-| **Compare** | Backdrop coverage; scrim direction and where it reaches page background; title hierarchy; Play/Details pill pair and which one carries the accent |
-| **Expected delta** | No reference equivalent — the reference is a single-page catalogue. Compare against the reference's *hero* anatomy instead |
-
-### 09 — Detail action row (close crop)
-| | |
-|---|---|
-| **Capture** | 900 × 200 crop of the button row |
-| **Compare** | Pill radius; primary vs secondary fill; icon size; hover state on each |
-
-### 10 — Player chrome
-| | |
-|---|---|
-| **Capture** | Paused playback with the OSD visible, plus one frame with the seek bar mid-drag |
-| **Compare** | Control-bar gradient (black → transparent, bottom to top); icon colour and hover; seek fill in the accent; subtitle family (Roboto Mono in the reference) |
-
-### 11 — Dialog
-| | |
-|---|---|
-| **Capture** | Any modal (e.g. *Edit metadata* or *Playback settings*) |
-| **Compare** | Backdrop `rgba(0,0,0,.7)` + `blur(10px) grayscale(.2)`; dialog surface `color-mix(--primary-1 90%, --bg-color)`; border `color-mix(--primary-2 30%, transparent)`; radius `1rem`; shadow `0 24px 48px rgba(0,0,0,.6)`; max width 440 px |
-
-### 12 — Toasts and popup menu
-| | |
-|---|---|
-| **Capture** | Trigger a toast and open a context menu in the same frame |
-| **Compare** | Toast surface `--primary-1`, text `--primary-3`, border `--primary-2`; menu radius; hover wash |
-
-### 13 — Login
-| | |
-|---|---|
-| **Capture** | Signed out, fresh session |
-| **Compare** | Card surface, radius `.75rem`, raised shadow; heading family and weight; input styling and focus ring |
-| **Expected delta** | The reference lays login out as a two-column grid (`1.25fr .75fr`, padding `2rem 4rem`). Jellyfin's login is a single centred column. Compare treatment, not layout |
-
-### 14 — Forms and settings
-| | |
-|---|---|
-| **Capture** | Dashboard → General |
-| **Compare** | Input surfaces, borders, focus rings; switch track/thumb; checkbox accent; submit button |
-
-### 15 — Focus ring
-| | |
-|---|---|
-| **Capture** | Two `Tab` frames: a header icon, and a card in a row |
-| **Compare** | Ring colour (accent), offset, halo. Reference uses a 2 px translucent accent shadow; Nox uses a 1 px solid ring plus the same halo |
+- [ ] Installed via the `@import` line, and it is the **first** rule in the box.
+- [ ] Hard-refreshed (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>).
+- [ ] DevTools → Network: the stylesheet loaded, not served from disk cache.
+- [ ] At least one library has real poster artwork and one item has a backdrop —
+      a theme that only ever sees grey placeholders proves very little.
+- [ ] DevTools → Rendering → **Emulate `prefers-reduced-motion`** for the motion pass.
 
 ---
 
-## B. Mobile pairs (375 × 812)
+## 1. Navigation rail (≥1100px)
 
-### 16 — Home, mobile
 | | |
 |---|---|
-| **Capture** | Top of home, unscrolled |
-| **Compare** | Section title drops to `1.4rem`; poster width `7.5rem`; row gap `.75rem`; arrow buttons absent (touch); gutter `1rem` |
+| **Capture** | `nox-rail-rest.png`, `nox-rail-open.png` |
+| **Setup** | Viewport ≥1100px wide |
+| **Check** | Rail is a black pill inset from the top, bottom and left edges — not a bar across the top. Radius is visibly soft (~1.25rem). It has a shadow on all four sides, so it reads as floating. |
+| **Open state** | Hovering, or tabbing into it, widens the rail and fades in a label under each icon. The labels must be legible and must not clip — the longest is usually "Notifications". |
+| **Layout** | Menu sits alone at the top. Search, cast, notifications, settings and the user button sit at the bottom. |
+| **Watch for** | Content jumping sideways when the rail opens (it must not — page padding is fixed to the collapsed width); the rail overlapping a card; a scrolled row visible *through* the rail. |
+| **Contrast** | The active/first button carries a gold tint at 12% alpha. Over the rail's black this should read as a tint, not a colour. |
 
-### 17 — Card + detail, mobile
+## 2. Navigation fallback (<1100px)
+
 | | |
 |---|---|
-| **Capture** | A row and a detail page top |
-| **Compare** | Tap targets ≥ 44 px; text legibility; no hover-only affordance survives |
+| **Capture** | `nox-topbar-<width>.png` at 900px, 768px, 390px |
+| **Check** | The rail is gone entirely and a normal top bar is back. At the top of the page the bar is transparent; once scrolled it becomes translucent with a blur and a bottom hairline. |
+| **Watch for** | Any remnant of the rail — leftover left padding, a visible pill, a stray `margin-top: auto`. All three are the failure modes of section 4 not winning. |
+| **No-blur fallback** | With `backdrop-filter` disabled in DevTools, the scrolled bar must be **solid**, not half-transparent with nothing behind it. |
 
-### 18 — Player, mobile landscape
+## 3. Home rows and cards
+
 | | |
 |---|---|
-| **Capture** | Playback at 812 × 375 |
-| **Compare** | Control density; that the OSD does not eat more than the bottom third |
+| **Capture** | `nox-home-rows.png`, `nox-card-hover.png` |
+| **Check** | Posters are 2:3, ~160 × 240px, 0.5rem radius, ~1.2rem apart. Section titles are ~1.7rem in the secondary blue-grey, not white. |
+| **Hover** | A card lifts ~2px, scales ~2%, and gains a shadow. The resting card must have **no** shadow — twelve shadowed posters in a row is the failure this rule exists to prevent. |
+| **Progress bar** | In-progress items show an accent-coloured bar. It should be a clean 0.3rem line, not a full-width overlay. |
+| **Arrows** | Scroller arrows appear on hover only, and are circular. |
+| **Scrollbar** | Horizontal scroller shows no visible scrollbar. |
+| **Watch for** | Titles wrapping to three lines and pushing the row height around; a card's hover shadow being clipped by the scroller's overflow. |
+
+## 4. Hero — detail page
+
+| | |
+|---|---|
+| **Capture** | `nox-hero-detail.png` |
+| **Check** | Artwork fills a rounded frame (~2rem). A scrim darkens the lower-left so the title reads against **any** artwork — test with something bright, not a dark poster. |
+| **Title** | Display face, `clamp(1.8rem, 4vw, 3rem)`, white. |
+| **Plaque** | The action buttons sit on a black plaque with a ~1.5rem radius, separated from the hero by a visible notch of page colour. This is the signature detail — if the plaque looks like a plain black box, the outline is not applying. |
+| **Play button** | Gold fill, black label. |
+| **Watch for** | The overview text running under the plaque; the plaque overflowing the hero frame at narrow widths; the notch disappearing because the outline colour matches the surface. |
+
+## 5. Hero — home screen
+
+| | |
+|---|---|
+| **Capture** | `nox-hero-home.png` |
+| **Check** | If a hero renders, it must match the detail-page treatment. Stock Jellyfin's home screen may render no hero at all without a plugin supplying backdrop artwork — that is expected, and the detail page is the real test. |
+
+## 6. Cards on a detail page
+
+| | |
+|---|---|
+| **Capture** | `nox-detail-cast.png` |
+| **Check** | Cast and "More like this" rows inherit the home-row card treatment. Episode lists use the same radius and hairline as the rest of the theme. |
+
+## 7. Video player
+
+| | |
+|---|---|
+| **Capture** | `nox-player.png`, `nox-player-seek.png` |
+| **Check** | Control bar is a black-to-transparent gradient — solid at the bottom edge, gone by the top of the bar. Title in the display face, time and technical text in mono. |
+| **Seek bar** | The filled portion is the accent. This one is forced with `!important` because the client paints it inline; if the bar is the stock colour, that rule lost. |
+| **Chapter thumbnails** | Rounded, with a themed bubble. |
+| **Player stats** | Overlay text is themed and legible over video. |
+| **Watch for** | Controls legible against a bright scene — scrub to something white and confirm the gradient still does its job. |
+
+## 8. Dialogs, menus and toasts
+
+| | |
+|---|---|
+| **Capture** | `nox-dialog.png`, `nox-menu.png`, `nox-toast.png` |
+| **Check** | Modals are rounded (~1rem) with a blurred, dimmed backdrop. Menus and action sheets use the raised surface, not pure black. |
+| **Tooltips** | Darkened and rounded. |
+| **Watch for** | A dialog whose backdrop blur is missing but which is still dimmed (correct fallback), or one that is fully transparent (broken). |
+
+## 9. Forms
+
+| | |
+|---|---|
+| **Capture** | `nox-forms.png` |
+| **Check** | Inputs have a hairline border, a slightly tighter radius than cards (~0.3rem), and an accent-tinted border plus ring on focus. |
+| **Selects and switches** | Themed, including the dropdown panel — that panel is often portalled to the end of `<body>`, so check it is themed too. |
+| **Buttons** | Raised buttons use the accent with black labels. |
+
+## 10. Login and first-run setup
+
+| | |
+|---|---|
+| **Capture** | `nox-login.png` at 1920px and 390px |
+| **Check** | The login screen is themed — background, input borders, focus states, and a gold submit button with a black label. This is the first page anyone sees and the easiest one to forget. |
+| **Responsive** | At phone width the form must not overflow and the submit button must stay full width. |
+| **First-run wizard** | Walk the setup wizard. Every step is a form; confirm none falls back to stock blue. |
+| **Watch for** | A logo area that still shows a stock Jellyfin image; the theme does not remove or replace it. |
+
+## 11. Motion
+
+| | |
+|---|---|
+| **Capture** | `nox-reduced-motion.png` |
+| **Check** | With `prefers-reduced-motion: reduce` emulated: no rail expansion animation, no card lift or scale, no dialog transition. Everything appears in place. |
+| **Watch for** | A transform still applying on hover even though the transition is gone — that is the bug the rule exists to prevent, and it is invisible without the emulation on. |
+
+## 12. Focus and keyboard
+
+| | |
+|---|---|
+| **Capture** | `nox-focus-ring.png` |
+| **Check** | Tab through the header, a row of cards, and a dialog. Every stop shows a visible 2px accent ring. |
+| **Rail** | Tabbing into the rail expands it — labels must be reachable without a mouse. |
+| **Watch for** | A focus ring that is invisible on the gold play button (low contrast) or clipped by an `overflow: hidden` ancestor. |
+
+## 13. Palettes
+
+| | |
+|---|---|
+| **Capture** | One home-screen shot per palette you intend to ship |
+| **Check** | Apply each palette class to `<html>`. The page background, card surfaces, text tiers and accent all move together. Nothing keeps the previous palette's colour. |
+| **Light palettes** | `.nox-light`, `.nox-oyster`, `.nox-arctic-dawn`, `.nox-enterprise-light` — check the submit and play buttons specifically. Their labels are black on the accent, which is what keeps them legible. |
+| **Watch for** | Hover tints staying gold after switching to a non-gold palette — that would mean a literal colour leaked into a rule instead of `rgba(var(--nox-accent-rgb), …)`. |
+
+## 14. Stress cases
+
+| | |
+|---|---|
+| **Long titles** | Add an item with a 120-character name. Cards should clamp rather than grow; the hero title should wrap without pushing the plaque off-screen. |
+| **Missing artwork** | An item with no poster should show a themed placeholder, not a white box. |
+| **Many rows** | A home screen with 20+ rows: section rhythm stays even, and scrolling stays smooth. |
+| **Empty library** | Themed empty state, not a bare grey message. |
+| **Wide** | 3440px: the rail keeps its inset and does not stretch. |
 
 ---
 
-## C. Test matrix
+## Reporting a break
 
-Run every row against a real Jellyfin 10.9+ instance. Mark each
-**pass / pass-with-delta / fail** and note the delta.
-
-| # | Surface | Desktop 1920 | Mobile 375 | Notes to record |
-|---|---|---|---|---|
-| 1 | Login | ☐ | ☐ | Card, inputs, focus |
-| 2 | Home (movies) | ☐ | ☐ | Hero presence, row spacing, card size |
-| 3 | Home (TV) | ☐ | ☐ | Series poster ratio, next-up row |
-| 4 | Movie detail | ☐ | ☐ | Backdrop scrim, action row |
-| 5 | TV detail + seasons | ☐ | ☐ | Season tabs, episode list radius |
-| 6 | Episode detail | ☐ | ☐ | Overview legibility over backdrop |
-| 7 | Search | ☐ | ☐ | Field radius, result list |
-| 8 | Settings / Dashboard | ☐ | ☐ | Inputs, switches, save button |
-| 9 | Playback (video) | ☐ | ☐ | OSD gradient, seek fill, chapters |
-| 10 | Playback (audio) | ☐ | ☐ | Now-playing bar, queue |
-| 11 | Dialogs | ☐ | ☐ | Overlay blur, surface, radius |
-| 12 | Toasts | ☐ | ☐ | Colour pair, radius |
-| 13 | Popup menus / drawer | ☐ | ☐ | Hover wash, selected state |
-| 14 | Keyboard only | ☐ | — | Every stop visible, ring contrast |
-| 15 | Reduced motion | ☐ | ☐ | Lift, header transition, smooth scroll all stop |
-| 16 | `backdrop-filter` unsupported | ☐ | — | Force via DevTools; header and dialogs stay legible |
-| 17 | `color-mix()` unsupported | ☐ | — | Force via DevTools; theme still reads |
-
-### Cross-browser
-
-| Engine | Version | Result |
-|---|---|---|
-| Chrome / Edge (Blink) | | ☐ |
-| Firefox (Gecko) | | ☐ |
-| Safari / iOS (WebKit) | | ☐ |
-| Jellyfin Media Player (CEF) | | ☐ |
-| Android app (WebView) | | ☐ |
-| Jellyfin for Android TV | | ☐ |
-
----
-
-## D. Known deltas to expect in every capture
-
-These are the differences that are *by design or by CSS's limits* — list them
-once in the write-up rather than re-litigating them per shot.
-
-1. **Navigation position.** Reference: fixed left rail. Nox: top bar with the
-   rail's visual treatment. CSS cannot move JS-positioned header children.
-2. **Hero presence.** Reference: always. Nox: only when a hero component exists
-   or the server has backdrops.
-3. **Card hover motion.** Nox adds a 2 % scale and 2 px lift; the reference does
-   not move the poster.
-4. **Scroll snap.** Nox adds x-proximity snap; the reference has none.
-5. **Row arrows.** Nox reveals Jellyfin's arrows on hover; the reference has no
-   arrows anywhere.
-6. **Page scrollbar.** Nox keeps a thin themed page scrollbar; the reference
-   hides scrollbars globally.
-7. **Hero gradient.** Nox paints a scrim from the sampled page colour; the
-   reference relies on its artwork and paints no gradient.
-8. **Login layout.** Reference: two-column grid. Nox: single centred column
-   (Jellyfin's structure).
-9. **Accent.** Reference default in CSS is `gold`, its live session resolved to
-   `#2196f3`, and it is a user preference, not a brand colour. Nox defaults to
-   the picker's Red `#f44336`.
-10. **Typography.** The reference loads Bricolage Grotesque from Google Fonts.
-    Nox makes no external request by default, so the display face differs unless
-    the optional `@import` in `tokens.css` is uncommented.
+Note the Jellyfin version (Dashboard → General), the browser, the viewport width,
+and whether the broken surface is inside section 16 (**BRITTLE**) of `nox.css`.
+Section 16 is expected to need maintenance as Jellyfin changes; anything outside
+it is a bug in the theme.

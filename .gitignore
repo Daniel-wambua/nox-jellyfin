@@ -15,6 +15,10 @@ screenshots/
 *.jpg
 !docs/*.png
 
+# Local preview harness and browser-driver scratch
+preview.html
+.playwright-mcp/
+
 # Scratch
 *.bak
 *.log

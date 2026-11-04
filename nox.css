@@ -1,1319 +1,1578 @@
 /*
- * Nox — a dark Jellyfin theme inspired by modern streaming UIs
+ * Nox — a dark theme for Jellyfin Web
  * Author: Nox contributors
  * License: MIT
+ *
+ * ── Install ────────────────────────────────────────────────────────────────
+ * Jellyfin Web → Dashboard → General → Custom CSS, then paste either the whole
+ * of this file, or this one line and let the CDN serve it:
+ *
+ *   @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css');
+ *
+ * The @import must be the first rule in the box.
+ *
+ * ── Optional font ──────────────────────────────────────────────────────────
+ * Nox ships no webfont and makes no request to a third-party CDN. The stack
+ * below resolves to whatever monospace face is installed locally. To opt in to
+ * the matching Google-hosted family, uncomment:
+ *
+ *   @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100..700&display=swap');
+ *
+ * ── Structure ──────────────────────────────────────────────────────────────
+ *   0  Design tokens
+ *   1  Global base
+ *   2  Header base
+ *   3  Navigation rail (≥1100px)
+ *   4  Top bar (<1100px)
+ *   5  Section headings
+ *   6  Hero and backdrop
+ *   7  Carousel rows
+ *   8  Cards
+ *   9  Detail page
+ *  10  Video player / OSD
+ *  11  Dialogs, toasts, menus
+ *  12  Forms, inputs, buttons
+ *  13  Login and first-run setup
+ *  14  Responsive
+ *  15  Motion, fallbacks, accessibility
+ *  16  BRITTLE — version-sensitive rules, isolated on purpose
  */
 
-/* ==================================================================
- * Nox for Jellyfin Web
- * ------------------------------------------------------------------
- * Two ways to install:
- *
- *   1. Paste the whole file into Dashboard -> General -> Custom CSS.
- *
- *   2. Or add a single line to that box and let the CDN serve it:
- *        @import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css');
- *
- * Self-contained by design: the token layer from tokens.css is inlined
- * in section 0 so this one file is all Jellyfin needs. Keep the two in
- * sync if you edit either.
- *
- * Selector policy
- *   - Only stable, upstream class hooks are targeted.
- *   - Everything is scoped under .skinHeader / .nox-scope-free page
- *     roots or namespaced with --nox-* properties.
- *   - !important appears only where Jellyfin writes the property
- *     inline on the element (documented at each use).
- *   - Anything version-fragile is confined to section 14 (BRITTLE).
- *
- * Source legend for sampled values:
- *   MAIN = /_next/static/css/991debb0c798841b.css  @ https://rivestream.ru/
- *   HOME = /_next/static/css/d517b9ea2542bdaa.css  @ https://rivestream.ru/
- *   See palette.json for the full citation table.
- * ================================================================== */
+/* ==========================================================================
+   0. DESIGN TOKENS
+   ========================================================================== */
 
-
-/* ==================================================================
- * 0. TOKENS  (mirror of tokens.css :root — keep in sync)
- * ================================================================== */
 :root {
-  /* palette — Nox Dark, MAIN `.dark,:root.dark` */
-  --nox-bg:                 #1b1919;
-  --nox-bg-gradient:        rgba(49,47,47,.8);
-  --nox-surface:            #000;
-  --nox-muted:              #576b87;
-  --nox-text-secondary:     #a4b3c9;
-  --nox-text:               #fff;
-  --nox-banner-saturation:  30%;
-  --nox-banner-lightness-1: 14%;
-  --nox-banner-lightness-2: 10%;
+  /* Surfaces */
+  --nox-bg: #1b1919;
+  --nox-bg-gradient: rgba(49, 47, 47, 0.8);
+  --nox-surface: #000000;
+  --nox-surface-raised: #101010;
+  --nox-border: rgba(164, 179, 201, 0.14);
+  --nox-border-strong: rgba(164, 179, 201, 0.28);
 
-  /* accent — runtime user setting upstream; Nox picks the "Red" option */
-  --nox-accent:             #f44336;
-  --nox-accent-rgb:         244,67,54;
-  --nox-accent-contrast:    #fff;
-  --nox-accent-hover:       #ff5a4d;   /* derived, not sampled */
-  --nox-accent-active:      #d93a2e;   /* derived, not sampled */
+  /* Text */
+  --nox-text: #ffffff;
+  --nox-text-secondary: #a4b3c9;
+  --nox-muted: #576b87;
 
-  /* semantic */
-  --nox-danger:             #ef4444;
-  --nox-danger-strong:      #e74c3c;
-  --nox-danger-strong-hover:#c0392b;
-  --nox-star:               #f59e0b;
+  /* Accent */
+  --nox-accent: #ffd700;
+  --nox-accent-rgb: 255, 215, 0;
+  --nox-on-accent: #000000;
 
-  /* derived surfaces */
-  --nox-surface-raised:     color-mix(in srgb, var(--nox-surface) 90%, var(--nox-bg));
-  --nox-surface-overlay:    color-mix(in srgb, var(--nox-surface) 82%, var(--nox-bg));
-  --nox-border:             color-mix(in srgb, var(--nox-muted) 30%, transparent);
-  --nox-border-strong:      color-mix(in srgb, var(--nox-muted) 55%, transparent);
-  --nox-overlay:            rgba(0,0,0,.7);
-  --nox-overlay-blur:       blur(10px) grayscale(.2);
-
-  /* typography */
-  --nox-font-display: "Bricolage Grotesque", "Inter", system-ui, -apple-system,
-                      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --nox-font-body:    "Bricolage Grotesque", "Inter", system-ui, -apple-system,
-                      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --nox-font-mono:    "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  --nox-weight-regular: 400;
-  --nox-weight-medium:  500;
-  --nox-weight-semi:    600;
-  --nox-weight-bold:    700;
-
-  --nox-size-section:   1.7rem;
-  --nox-size-dialog:    1.15rem;
-  --nox-size-nav:       1.3rem;
-  --nox-size-body:      1rem;
-  --nox-size-meta:      1rem;
-  --nox-size-small:     .9rem;
-  --nox-size-tiny:      .75rem;
-
-  --nox-leading-tight:  1.2rem;
-  --nox-leading-base:   1.5;
-  --nox-tracking-tight: -.01em;
-
-  /* radii */
-  --nox-radius-focus:  .2rem;
-  --nox-radius-xs:     .3rem;
-  --nox-radius-sm:     .4rem;
-  --nox-radius-pill:   .5rem;
-  --nox-radius-card:   .5rem;
-  --nox-radius-lg:     .75rem;
+  /* Geometry */
+  --nox-radius-card: 0.5rem;
+  --nox-radius-button: 0.3rem;
+  --nox-radius-hero: 2rem;
+  --nox-radius-plaque: 1.5rem;
   --nox-radius-dialog: 1rem;
-  --nox-radius-round:  2rem;
-  --nox-radius-full:   999px;
+  --nox-radius-pill: 2rem;
 
-  /* shadows */
-  --nox-shadow-card:       0 1px 3px rgba(0,0,0,.35);
-  --nox-shadow-card-hover: 0 1px 2px var(--nox-text-secondary);
-  --nox-shadow-dialog:     0 24px 48px rgba(0,0,0,.6);
-  --nox-shadow-popover:    0 10px 30px -5px rgba(0,0,0,.4), 0 0 1px hsla(0,0%,100%,.1);
-  --nox-shadow-focus:      0 0 0 2px rgba(var(--nox-accent-rgb), .25);
-  --nox-shadow-glow:       0 0 10px var(--nox-accent), 0 0 5px var(--nox-accent);
+  /* Card box */
+  --nox-card-width: 10rem;
+  --nox-card-height: 15rem;
+  --nox-card-gap: 1.2rem;
+  --nox-row-gap: 3rem;
 
-  /* spacing */
-  --nox-space-1: .25rem;
-  --nox-space-2: .5rem;
-  --nox-space-3: .75rem;
-  --nox-space-4: 1rem;
-  --nox-space-5: 1.5rem;
-  --nox-space-6: 2rem;
-  --nox-space-7: 2.5rem;
-  --nox-space-8: 4rem;
-  --nox-gutter:  5rem;
+  /* Navigation rail */
+  --nox-rail-w: 4.5rem;
+  --nox-rail-w-open: 10.25rem;
+  --nox-rail-inset: 0.75rem;
+  --nox-rail-radius: 1.25rem;
 
-  /* motion */
-  --nox-dur-fastest: .1s;
-  --nox-dur-fast:    .15s;
-  --nox-dur-base:    .2s;
-  --nox-dur-slow:    .3s;
-  --nox-ease:          ease;
-  --nox-ease-material: cubic-bezier(.4,0,.2,1);
-  --nox-ease-in-out:   ease-in-out;
+  /* Motion */
+  --nox-dur-fast: 0.14s;
+  --nox-dur-base: 0.2s;
+  --nox-dur-slow: 0.3s;
+  --nox-dur-rail: 0.28s;
+  --nox-ease: ease;
+  --nox-ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  /* layout metrics */
-  --nox-hero-height:        90dvh;
-  --nox-carousel-height:    80dvh;
-  --nox-carousel-max-width: calc(100vw - var(--nox-gutter));
-  --nox-carousel-radius:    2rem;
-  --nox-card-width:         10rem;
-  --nox-card-height:        15rem;
-  --nox-progress-height:    .3rem;
-  --nox-header-height:      3.5rem;
-  --nox-blur:               12px;
-  --nox-blur-sm:            8px;
+  /* Effects */
+  --nox-blur: 12px;
+  --nox-shadow-card: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --nox-shadow-rail: 0 18px 48px rgba(0, 0, 0, 0.6);
+  --nox-focus-ring: 0 0 0 2px rgba(var(--nox-accent-rgb), 0.55);
+
+  /* Type */
+  --nox-font: "Roboto Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo,
+    Consolas, "Liberation Mono", monospace;
+  --nox-font-display: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Alternate palettes (all sampled from MAIN). Add e.g. class="nox-midnight"
-   to <html>, or copy a block into :root above. */
-.nox-light { --nox-bg:#f4f7fe; --nox-bg-gradient:hsla(0,8%,93%,.8); --nox-surface:#fff; --nox-muted:#64748b; --nox-text-secondary:#52525b; --nox-text:#000; --nox-accent-contrast:#fff; }
-.nox-charcoal { --nox-bg:#2d2d2d; --nox-bg-gradient:rgba(75,75,75,.8); --nox-surface:#1e1e1e; --nox-muted:#787878; --nox-text-secondary:#c8c8c8; --nox-text:#fff; }
-.nox-evergreen { --nox-bg:#1b3022; --nox-bg-gradient:rgba(40,80,60,.8); --nox-surface:#0f1e13; --nox-muted:#4c7a5d; --nox-text-secondary:#88b394; --nox-text:#fff; }
-.nox-midnight { --nox-bg:#121826; --nox-bg-gradient:rgba(20,25,40,.8); --nox-surface:#0a0f1f; --nox-muted:#374151; --nox-text-secondary:#9ca3af; --nox-text:#fff; }
-.nox-oyster { --nox-bg:#eae6df; --nox-bg-gradient:hsla(40,43%,93%,.8); --nox-surface:#fdfaf4; --nox-muted:#c8b7a6; --nox-text-secondary:#8d7962; --nox-text:#000; --nox-accent-contrast:#fff; }
-.nox-aurora { --nox-bg:#1b1f2b; --nox-bg-gradient:rgba(30,40,60,.8); --nox-surface:#101520; --nox-muted:#3b6978; --nox-text-secondary:#81a1c1; --nox-text:#fff; }
-.nox-obsidian-luxury { --nox-bg:#0d0d0d; --nox-bg-gradient:hsla(0,0%,5%,.9); --nox-surface:#1c1c1c; --nox-muted:#5c5c5c; --nox-text-secondary:#9c8500; --nox-text:#f5f5f5; }
-.nox-arctic-dawn { --nox-bg:#f0f4f8; --nox-bg-gradient:rgba(240,244,248,.9); --nox-surface:#fff; --nox-muted:#97adbc; --nox-text-secondary:#4e768a; --nox-text:#011f4b; --nox-accent-contrast:#fff; }
-.nox-nordic-frost { --nox-bg:#1e222a; --nox-bg-gradient:rgba(40,44,52,.8); --nox-surface:#282c34; --nox-muted:#5c6370; --nox-text-secondary:#61afef; --nox-text:#abb2bf; }
-.nox-slate-corporate { --nox-bg:#0f172a; --nox-bg-gradient:rgba(30,41,59,.8); --nox-surface:#1e293b; --nox-muted:#64748b; --nox-text-secondary:#0ea5e9; --nox-text:#f8fafc; }
-.nox-royal-amethyst { --nox-bg:#090514; --nox-bg-gradient:rgba(26,17,43,.8); --nox-surface:#1a112b; --nox-muted:#7c5dfa; --nox-text-secondary:#a5b4fc; --nox-text:#f3f4f6; }
-.nox-warm-terracotta { --nox-bg:#1c1613; --nox-bg-gradient:rgba(46,35,31,.8); --nox-surface:#2e231f; --nox-muted:#d97706; --nox-text-secondary:#fcd34d; --nox-text:#fafaf9; }
-.nox-monochrome-pro { --nox-bg:#121212; --nox-bg-gradient:rgba(30,30,30,.8); --nox-surface:#1e1e1e; --nox-muted:#757575; --nox-text-secondary:#e0e0e0; --nox-text:#fff; }
-.nox-enterprise-light { --nox-bg:#f8fafc; --nox-bg-gradient:rgba(241,245,249,.8); --nox-surface:#fff; --nox-muted:#64748b; --nox-text-secondary:#2563eb; --nox-text:#0f172a; --nox-accent-contrast:#fff; }
+/* --------------------------------------------------------------------------
+   Alternate palettes. Apply one class to <html>. Each redefines the same
+   public tokens, so every rule below follows along.
+   -------------------------------------------------------------------------- */
 
+.nox-light {
+  --nox-bg: #f4f7fe;
+  --nox-bg-gradient: rgba(238, 235, 235, 0.8);
+  --nox-surface: #ffffff;
+  --nox-surface-raised: #ffffff;
+  --nox-text: #0b1220;
+  --nox-text-secondary: #52525b;
+  --nox-muted: #64748b;
+  --nox-border: rgba(82, 82, 91, 0.18);
+  --nox-border-strong: rgba(82, 82, 91, 0.32);
+  --nox-accent: #b8860b;
+  --nox-accent-rgb: 184, 134, 11;
+  /* Black, not white: white on this accent measures 3.25:1, which fails AA for
+     the button labels that sit on it. Black gives 6.45:1. */
+  --nox-on-accent: #000000;
+}
 
-/* ==================================================================
- * 1. GLOBAL
- * ================================================================== */
+.nox-charcoal {
+  --nox-bg: #121212;
+  --nox-surface: #000000;
+  --nox-surface-raised: #1c1c1c;
+  --nox-text: #f2f2f2;
+  --nox-text-secondary: #b8b8b8;
+  --nox-muted: #7a7a7a;
+  --nox-accent: #ffd700;
+  --nox-accent-rgb: 255, 215, 0;
+  --nox-on-accent: #000000;
+}
+
+.nox-evergreen {
+  --nox-bg: #0d1512;
+  --nox-surface: #05100c;
+  --nox-surface-raised: #122019;
+  --nox-text: #eef7f2;
+  --nox-text-secondary: #a9c6b8;
+  --nox-muted: #6b8f7d;
+  --nox-accent: #7ee2a8;
+  --nox-accent-rgb: 126, 226, 168;
+  --nox-on-accent: #04120b;
+}
+
+.nox-midnight {
+  --nox-bg: #0b1220;
+  --nox-surface: #060b14;
+  --nox-surface-raised: #121c2c;
+  --nox-text: #eaf1ff;
+  --nox-text-secondary: #9fb3d1;
+  --nox-muted: #5f7492;
+  --nox-accent: #6cb6ff;
+  --nox-accent-rgb: 108, 182, 255;
+  --nox-on-accent: #04101f;
+}
+
+.nox-oyster {
+  --nox-bg: #e9e6e0;
+  --nox-bg-gradient: rgba(255, 255, 255, 0.75);
+  --nox-surface: #ffffff;
+  --nox-surface-raised: #ffffff;
+  --nox-text: #1c1a17;
+  --nox-text-secondary: #5c574f;
+  --nox-muted: #837c72;
+  --nox-border: rgba(28, 26, 23, 0.14);
+  --nox-border-strong: rgba(28, 26, 23, 0.26);
+  --nox-accent: #b8860b;
+  --nox-accent-rgb: 184, 134, 11;
+  /* Black, not white: 6.45:1 against 3.25:1 for white. See .nox-light. */
+  --nox-on-accent: #000000;
+}
+
+.nox-aurora {
+  --nox-bg: #10131a;
+  --nox-surface: #090b10;
+  --nox-surface-raised: #171b24;
+  --nox-text: #f3f6ff;
+  --nox-text-secondary: #a9b6d6;
+  --nox-muted: #6b7899;
+  --nox-accent: #9d7bff;
+  --nox-accent-rgb: 157, 123, 255;
+  --nox-on-accent: #0b0716;
+}
+
+.nox-obsidian-luxury {
+  --nox-bg: #0c0b0a;
+  --nox-surface: #000000;
+  --nox-surface-raised: #161412;
+  --nox-text: #f7f3ea;
+  --nox-text-secondary: #cdbfa6;
+  --nox-muted: #8d7f68;
+  --nox-accent: #d4af37;
+  --nox-accent-rgb: 212, 175, 55;
+  --nox-on-accent: #14100a;
+}
+
+.nox-arctic-dawn {
+  --nox-bg: #eef4f8;
+  --nox-bg-gradient: rgba(255, 255, 255, 0.8);
+  --nox-surface: #ffffff;
+  --nox-surface-raised: #ffffff;
+  --nox-text: #0e1a24;
+  --nox-text-secondary: #40566b;
+  --nox-muted: #6c8093;
+  --nox-border: rgba(14, 26, 36, 0.14);
+  --nox-border-strong: rgba(14, 26, 36, 0.26);
+  --nox-accent: #0d8bd9;
+  --nox-accent-rgb: 13, 139, 217;
+  /* Black, not white: 5.71:1 against 3.68:1 for white. */
+  --nox-on-accent: #000000;
+}
+
+.nox-nordic-frost {
+  --nox-bg: #14181c;
+  --nox-surface: #0b0e11;
+  --nox-surface-raised: #1b2026;
+  --nox-text: #e8eef4;
+  --nox-text-secondary: #a3b3c2;
+  --nox-muted: #6d7f90;
+  --nox-accent: #88c0d0;
+  --nox-accent-rgb: 136, 192, 208;
+  --nox-on-accent: #0b1116;
+}
+
+.nox-slate-corporate {
+  --nox-bg: #171b21;
+  --nox-surface: #0d1015;
+  --nox-surface-raised: #1e242c;
+  --nox-text: #f0f3f7;
+  --nox-text-secondary: #a8b3c1;
+  --nox-muted: #74808f;
+  --nox-accent: #4f9cf9;
+  --nox-accent-rgb: 79, 156, 249;
+  --nox-on-accent: #06111f;
+}
+
+.nox-royal-amethyst {
+  --nox-bg: #16101f;
+  --nox-surface: #0b0712;
+  --nox-surface-raised: #1f1729;
+  --nox-text: #f5f0ff;
+  --nox-text-secondary: #bfaee0;
+  --nox-muted: #7f6c9e;
+  --nox-accent: #c792ea;
+  --nox-accent-rgb: 199, 146, 234;
+  --nox-on-accent: #140a1e;
+}
+
+.nox-warm-terracotta {
+  --nox-bg: #1d1512;
+  --nox-surface: #0f0a08;
+  --nox-surface-raised: #271b16;
+  --nox-text: #fdf1e9;
+  --nox-text-secondary: #d6b3a1;
+  --nox-muted: #9c7a68;
+  --nox-accent: #ff8a5b;
+  --nox-accent-rgb: 255, 138, 91;
+  --nox-on-accent: #1a0c05;
+}
+
+.nox-monochrome-pro {
+  --nox-bg: #101010;
+  --nox-surface: #000000;
+  --nox-surface-raised: #191919;
+  --nox-text: #ffffff;
+  --nox-text-secondary: #b3b3b3;
+  --nox-muted: #7a7a7a;
+  --nox-accent: #ffffff;
+  --nox-accent-rgb: 255, 255, 255;
+  --nox-on-accent: #000000;
+}
+
+.nox-enterprise-light {
+  --nox-bg: #f7f8fa;
+  --nox-bg-gradient: rgba(255, 255, 255, 0.8);
+  --nox-surface: #ffffff;
+  --nox-surface-raised: #ffffff;
+  --nox-text: #14181d;
+  --nox-text-secondary: #4a5666;
+  --nox-muted: #7a8698;
+  --nox-border: rgba(20, 24, 29, 0.12);
+  --nox-border-strong: rgba(20, 24, 29, 0.24);
+  --nox-accent: #2563eb;
+  --nox-accent-rgb: 37, 99, 235;
+  --nox-on-accent: #ffffff;
+}
+
+/* ==========================================================================
+   1. GLOBAL BASE
+   ========================================================================== */
+
 html {
   background-color: var(--nox-bg);
-  color-scheme: dark;                 /* native form controls + scrollbars */
+  color-scheme: dark;
 }
 
+.nox-light,
+.nox-oyster,
+.nox-arctic-dawn,
+.nox-enterprise-light {
+  color-scheme: light;
+}
+
+/* !important is required here: Jellyfin writes the user's chosen dashboard
+   background colour onto <body> as an inline style, and an inline style beats
+   any stylesheet rule. Nothing else in the theme can outrank it. */
 body {
-  background-color: var(--nox-bg);
+  background-color: var(--nox-bg) !important;
+  background-image: none;
   color: var(--nox-text);
-  font-family: var(--nox-font-body);
-  font-weight: var(--nox-weight-regular);
-  line-height: var(--nox-leading-base);
+  font-family: var(--nox-font);
+  letter-spacing: -0.5px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Nox-alt palettes that are light need the light colour-scheme hint. */
-html.nox-light,
-html.nox-oyster,
-html.nox-arctic-dawn,
-html.nox-enterprise-light { color-scheme: light; }
-
-/* Selection — the reference uses the accent for ::selection across the app. */
-::selection {
-  background-color: var(--nox-accent);
-  color: var(--nox-accent-contrast);
-}
-
-/* Headings inherit the display face. MAIN sets Bricolage Grotesque as the
-   system font for h1–h6 with a serif fallback; Nox keeps the family and
-   swaps the fallback for a sans stack so an offline client never falls
-   through to Times. */
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .pageTitle,
-.sectionTitleText {
+.sectionTitle,
+.sectionTitleText,
+.itemName,
+.cardText-first {
   font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  color: var(--nox-text);
+  letter-spacing: -1.5px;
 }
 
-a { color: var(--nox-text-secondary); }
-a:hover { color: var(--nox-text); }
-
-/* Focus -------------------------------------------------------------
-   MAIN uses a 2px translucent accent ring, not an outline. Nox uses a
-   1px solid ring (higher contrast against a nearly-black page) plus the
-   matching halo, and removes the UA default. */
-:focus { outline: none; }
-
-:focus-visible {
-  outline: 1px solid var(--nox-accent);
-  outline-offset: 2px;
-  border-radius: var(--nox-radius-focus);
-  box-shadow: var(--nox-shadow-focus);
-}
-
-/* Page scrollbar ----------------------------------------------------
-   The reference hides every scrollbar globally. That is workable on a
-   marketing-style page but removes the only scroll affordance on long
-   Jellyfin grids, so Nox keeps a thin themed bar on the document and
-   hides scrollbars only inside horizontal scrollers (section 5). */
-* { scrollbar-width: thin; scrollbar-color: var(--nox-border-strong) transparent; }
-
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, var(--nox-muted) 40%, transparent);
-  border: 2px solid transparent;
-  border-radius: var(--nox-radius-xs);
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in srgb, var(--nox-muted) 65%, transparent);
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-corner { background: transparent; }
-
-/* Jellyfin ships a translucent page background gradient on some pages. */
-.backgroundContainer,
-.mainAnimatedPages.skinBody,
-.backdropContainer + .mainAnimatedPages { background-color: var(--nox-bg); }
-
-/* The "backdrop over whole app" feature. */
-.backdropContainer { background-color: var(--nox-bg); }
-.backdropImage { opacity: .18; }
-
-
-/* ==================================================================
- * 2. SECTION HEADINGS
- * HOME: section title is 1.7rem (27.2px live) in --primary-3, laid out
- * as a flex row with a .3rem gap.
- * ================================================================== */
-.verticalSection { margin-bottom: var(--nox-space-5); }
-
-.sectionTitleContainer {
-  display: flex;
-  align-items: center;
-  gap: var(--nox-space-2);
-  margin: 0 var(--nox-space-2) var(--nox-space-2);
-}
-
-.sectionTitle {
-  font-family: var(--nox-font-display);
-  font-size: var(--nox-size-section);
-  font-weight: var(--nox-weight-semi);
-  letter-spacing: var(--nox-tracking-tight);
+h1 {
+  font-size: 1.7rem;
+  font-weight: 700;
   color: var(--nox-text-secondary);
-  padding: 0;
 }
 
-.sectionTitleText { color: var(--nox-text-secondary); }
+h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--nox-text-secondary);
+}
 
-.sectionTitle .material-icons,
-.sectionTitle .md-icon { color: var(--nox-text-secondary); }
+p,
+label,
+input,
+textarea,
+select {
+  letter-spacing: -0.5px;
+}
 
-/* The "more" affordance at the right edge of a row header. */
-.sectionTitleContainer .listItemButton,
-.sectionTitleContainer .btnMore {
-  color: var(--nox-muted);
-  border-radius: var(--nox-radius-xs);
+a {
+  color: var(--nox-text-secondary);
   transition: color var(--nox-dur-fast) var(--nox-ease);
 }
-.sectionTitleContainer .listItemButton:hover,
-.sectionTitleContainer .btnMore:hover { color: var(--nox-accent); }
 
+a:hover,
+a:focus-visible {
+  color: var(--nox-accent);
+}
 
-/* ==================================================================
- * 3. TOP NAV  (.skinHeader)
- * The reference's navigation is a fixed LEFT vertical rail
- * (MAIN .navbar_wrapper: position:fixed; left:.5rem; background
- * transparent; the panel inside is --primary-1 at .5rem radius).
- * Jellyfin's header is a horizontal top bar; Nox restyles that bar to
- * carry the same visual language — transparent over content, a
- * --primary-1 panel, blurred and bordered once scrolled. An opt-in
- * left-rail variant lives in section 14.
- * ================================================================== */
+::selection {
+  background: var(--nox-accent);
+  color: var(--nox-on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--nox-accent);
+  outline-offset: 2px;
+  box-shadow: var(--nox-focus-ring);
+  border-radius: inherit;
+}
+
+/* The page keeps a thin visible scrollbar — hiding it on the document makes
+   long libraries feel broken. Horizontal rows hide theirs in section 7. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--nox-border-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--nox-muted);
+  background-clip: padding-box;
+}
+
+.backgroundContainer,
+.backgroundContainer-transparent {
+  background-color: var(--nox-bg);
+}
+
+.backdropImage {
+  opacity: 0.42;
+  filter: saturate(1.05);
+}
+
+/* ==========================================================================
+   2. HEADER BASE
+   ========================================================================== */
+
 .skinHeader {
   background-color: transparent;
   background-image: none;
+  border: none;
   border-bottom: 1px solid transparent;
   box-shadow: none;
   transition:
     background-color var(--nox-dur-slow) var(--nox-ease),
-    border-color     var(--nox-dur-slow) var(--nox-ease),
-    backdrop-filter  var(--nox-dur-slow) var(--nox-ease),
-    transform        var(--nox-dur-base) var(--nox-ease-material);
+    border-color var(--nox-dur-slow) var(--nox-ease),
+    backdrop-filter var(--nox-dur-slow) var(--nox-ease),
+    width var(--nox-dur-rail) var(--nox-ease-out);
 }
 
-/* Scrolled state. Jellyfin's Headroom.js adds .headroom--not-top to
-   .skinHeader once the page leaves the top; we key the blur off it.
-   !important: Jellyfin writes an inline background-color on the header
-   when a backdrop image is configured (setBackdropTransparency), so a
-   plain declaration loses the cascade. This is the only global use. */
-.skinHeader.headroom--not-top {
-  background-color: color-mix(in srgb, var(--nox-bg) 72%, transparent) !important;
-  -webkit-backdrop-filter: blur(var(--nox-blur)) saturate(140%);
-  backdrop-filter: blur(var(--nox-blur)) saturate(140%);
-  border-bottom-color: var(--nox-border);
-}
-.skinHeader.headroom--unpinned { transform: translateY(-100%); }
-.skinHeader.headroom--pinned   { transform: translateY(0); }
-
-/* Pages that have no hero should not float a transparent bar. */
-.skinHeader.skinHeader-withBackground {
-  background-color: color-mix(in srgb, var(--nox-bg) 88%, transparent);
-  backdrop-filter: blur(var(--nox-blur)) saturate(140%);
-  -webkit-backdrop-filter: blur(var(--nox-blur)) saturate(140%);
-}
-
-/* Logo / title area ------------------------------------------------- */
-.pageTitle {
-  font-family: var(--nox-font-display);
-  font-size: var(--nox-size-nav);
-  font-weight: var(--nox-weight-semi);
-  letter-spacing: var(--nox-tracking-tight);
-  color: var(--nox-text);
-  margin-left: var(--nox-space-2);
-}
-.pageTitleWithDefaultLogo {
-  background-image: none;             /* no upstream artwork is shipped */
-  width: auto;
-  height: auto;
-}
-
-/* Icon buttons — MAIN keeps nav items at 1.3rem on a .5rem panel. */
-.headerButton {
+.skinHeader .headerButton {
   color: var(--nox-text-secondary);
-  border-radius: var(--nox-radius-pill);
-  padding: var(--nox-space-2);
   transition:
-    color var(--nox-dur-fast) var(--nox-ease),
-    background-color var(--nox-dur-fast) var(--nox-ease);
+    background-color var(--nox-dur-fast) var(--nox-ease),
+    color var(--nox-dur-fast) var(--nox-ease);
 }
-.headerButton:hover,
-.headerButton:focus-visible {
+
+.skinHeader .headerButton:hover,
+.skinHeader .headerButton:focus-visible {
   color: var(--nox-text);
-  background-color: color-mix(in srgb, var(--nox-muted) 22%, transparent);
-}
-.headerButton .material-icons,
-.headerButton .md-icon,
-.headerButtonIcon { font-size: var(--nox-size-nav); }
-
-.headerButton.headerButtonRight { margin-left: var(--nox-space-1); }
-
-/* Cast / sync / user avatar cluster. */
-.headerRight { gap: var(--nox-space-1); }
-
-.skinHeader .emby-button.show-focus { border-radius: var(--nox-radius-pill); }
-
-
-/* ==================================================================
- * 4. HOME — HERO
- * HOME .HomeHero:   height 90dvh, full-bleed.
- * HOME .HomeCarousel: height 80dvh, max-width calc(100vw - 5rem),
- *   margin 1rem 0 0, border-radius 2rem.
- * HOME .HomeHeroMeta: width 20rem, radius 1.5rem, margin-bottom -2.5rem,
- *   background --primary-1, outlined by .7rem of --bg-color at offset -1px.
- *
- * Jellyfin has no native "hero". The nearest stable hooks are the
- * home screen's first section and the featured/backdrop containers.
- * A JS-free approximation is what follows; see section 14 for the
- * layout that CSS cannot restructure.
- * ================================================================== */
-.homePage .verticalSection:first-child { margin-top: 0; }
-
-/* Preferred host: a plugin can render a real hero into .nox-hero.
-   Without one, Nox styles Jellyfin's own featured row (the first
-   section on the home screen) as the hero band. */
-.nox-hero,
-.homePage .verticalSection:first-of-type .itemsContainer[data-type="backdrop"] {
-  position: relative;
-  min-height: var(--nox-hero-height);
-  display: flex;
-  align-items: flex-end;
 }
 
-/* Gradient scrim. The reference does not paint a CSS gradient over the
-   hero — it relies on the artwork plus a rounded frame. Nox adds a scrim
-   because Jellyfin backdrops are arbitrary user images with no
-   consistent dark region for text. Stops are anchored to the sampled
-   --bg-color so the fade lands exactly on the page background. */
-.nox-hero::after,
-.homePage .verticalSection:first-of-type .itemsContainer[data-type="backdrop"]::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--nox-bg) 0%, transparent) 0%,
-    color-mix(in srgb, var(--nox-bg) 45%, transparent) 45%,
-    color-mix(in srgb, var(--nox-bg) 88%, transparent) 78%,
-    var(--nox-bg) 100%
-  );
+.pageTitle,
+.pageTitleWithDefaultLogo {
+  font-family: var(--nox-font-display);
+  font-weight: 700;
+  color: var(--nox-text);
+  letter-spacing: -1.5px;
 }
 
-/* Hero meta panel — HOME .HomeHeroMeta.
-   Outlined instead of padded, so it reads as a notch cut into the art. */
-.nox-hero-meta,
-.homePage .verticalSection:first-of-type .sectionTitleContainer {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--nox-space-4);
-  width: 20rem;                                     /* HOME .HomeHeroMeta */
-  max-width: calc(100% - var(--nox-space-8));
-  margin: var(--nox-space-7) var(--nox-space-6) calc(-1 * var(--nox-space-7));
-  padding: var(--nox-space-4);
-  background-color: var(--nox-surface);             /* --primary-1 */
-  border-radius: var(--nox-space-5);                /* 1.5rem */
-  outline: .7rem solid var(--nox-bg);               /* HOME .HomeHeroMeta */
-  outline-offset: -1px;
+.headerLogo,
+.pageTitleWithDefaultLogo {
+  filter: none;
 }
 
-/* Meta line — HOME .HomeHeroMetaRow2: 1rem, gap .7rem, --primary-2. */
-.nox-hero-meta-row,
-.homePage .verticalSection:first-of-type .sectionTitleContainer > * {
+/* ==========================================================================
+   3. NAVIGATION RAIL (≥1100px)
+   --------------------------------------------------------------------------
+   Jellyfin's header is a horizontal bar whose children (`.headerLeft`,
+   `.headerRight`) are laid out by the client's own stylesheets. From 1100px up
+   Nox turns the whole bar into a fixed vertical pill on the left edge and
+   stacks those two groups inside it. Nothing moves in the DOM, so no Jellyfin
+   behaviour changes: the drawer button still opens the drawer, the account
+   button still opens its menu.
+
+   At rest the pill is icon-only. Pointing at it — or tabbing into it — widens
+   the pill and reveals the name under each icon.
+   ========================================================================== */
+
+@media (min-width: 1100px) {
+  .mainAnimatedPages {
+    padding-left: var(--nox-rail-w);
+  }
+
+  .skinHeader {
+    position: fixed;
+    top: var(--nox-rail-inset);
+    bottom: var(--nox-rail-inset);
+    left: var(--nox-rail-inset);
+    right: auto;
+    width: var(--nox-rail-w);
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0.75rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    overflow: hidden;
+    border-radius: var(--nox-rail-radius);
+    border: 1px solid var(--nox-border);
+    /* Jellyfin writes an inline background-color onto the header when a
+       backdrop is configured. The rail must stay opaque or the icons lose
+       their contrast against arbitrary artwork, so this one is forced. */
+    background-color: var(--nox-surface) !important;
+    background-image: none !important;
+    box-shadow: var(--nox-shadow-rail);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    z-index: 900;
+  }
+
+  .skinHeader:hover,
+  .skinHeader:focus-within {
+    width: var(--nox-rail-w-open);
+    border-color: var(--nox-border-strong);
+  }
+
+  /* Headroom.js slides the bar upward on scroll. A rail must not move. */
+  .skinHeader.headroom--not-top,
+  .skinHeader.headroom--pinned,
+  .skinHeader.headroom--unpinned {
+    transform: none;
+    top: var(--nox-rail-inset);
+    border-bottom-color: var(--nox-border);
+  }
+
+  .skinHeader .headerLeft,
+  .skinHeader .headerRight {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.125rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .skinHeader .headerRight {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--nox-border);
+  }
+
+  .skinHeader .pageTitle,
+  .skinHeader .pageTitleWithDefaultLogo,
+  .skinHeader .headerLogo {
+    display: none;
+  }
+
+  /* Each button becomes an icon stacked over its name. */
+  .skinHeader .headerButton {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.125rem;
+    width: 100%;
+    height: auto;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0.5rem 0.25rem;
+    border-radius: 0.85rem;
+    background-color: transparent;
+  }
+
+  .skinHeader .headerButton:hover,
+  .skinHeader .headerButton:focus-visible {
+    background-color: rgba(164, 179, 201, 0.1);
+  }
+
+  .skinHeader .headerButton .material-icons,
+  .skinHeader .headerButton .md-icon,
+  .skinHeader .headerButton i {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  /* The name. `attr(title)` is the only way to surface Jellyfin's own button
+     labels without JavaScript, and every header button carries a title. */
+  .skinHeader .headerButton::after {
+    content: attr(title);
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    font-family: var(--nox-font);
+    font-size: 0.68rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--nox-text-secondary);
+    transition:
+      opacity var(--nox-dur-base) var(--nox-ease),
+      max-height var(--nox-dur-base) var(--nox-ease),
+      color var(--nox-dur-fast) var(--nox-ease);
+  }
+
+  .skinHeader:hover .headerButton::after,
+  .skinHeader:focus-within .headerButton::after {
+    opacity: 1;
+    max-height: 1.4rem;
+  }
+
+  .skinHeader .headerButton:hover::after,
+  .skinHeader .headerButton:focus-visible::after {
+    color: var(--nox-text);
+  }
+
+  /* The first entry reads as the current location, the way a home icon would
+     in this layout. */
+  .skinHeader .headerLeft .headerButton:first-child {
+    color: var(--nox-accent);
+    background-color: rgba(var(--nox-accent-rgb), 0.12);
+  }
+
+  .skinHeader .headerLeft .headerButton:first-child:hover,
+  .skinHeader .headerLeft .headerButton:first-child:focus-visible {
+    background-color: rgba(var(--nox-accent-rgb), 0.2);
+  }
+
+  .skinHeader .headerLeft .headerButton:first-child::after {
+    color: var(--nox-accent);
+  }
+
+  /* The drawer opens over the rail; shift it clear. */
+  .mainDrawer {
+    left: calc(var(--nox-rail-w) + var(--nox-rail-inset) * 2);
+  }
+
+  .mainDrawerHandle {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   4. TOP BAR (<1100px)
+   ========================================================================== */
+
+@media (max-width: 1099px) {
+  .mainAnimatedPages {
+    padding-left: 0;
+  }
+
+  /* !important is required for the same reason as the body rule above: once a
+     backdrop is configured, Jellyfin paints the header's background inline. */
+  .skinHeader.headroom--not-top {
+    background-color: color-mix(in srgb, var(--nox-bg) 72%, transparent) !important;
+    -webkit-backdrop-filter: blur(var(--nox-blur)) saturate(140%);
+    backdrop-filter: blur(var(--nox-blur)) saturate(140%);
+    border-bottom-color: var(--nox-border);
+  }
+
+  .skinHeader .headerButton {
+    border-radius: 0.6rem;
+  }
+
+  .skinHeader .headerButton:hover,
+  .skinHeader .headerButton:focus-visible {
+    background-color: rgba(164, 179, 201, 0.12);
+  }
+}
+
+/* ==========================================================================
+   5. SECTION HEADINGS
+   ========================================================================== */
+
+.verticalSection {
+  margin-bottom: var(--nox-row-gap);
+}
+
+.sectionTitleContainer {
   display: flex;
   align-items: center;
-  gap: .7rem;
-  font-size: var(--nox-size-meta);
-  color: var(--nox-muted);
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
 }
 
-/* Hero title — clamped to a single line upstream. */
-.nox-hero-meta h1,
-.homePage .verticalSection:first-of-type .sectionTitle {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: var(--nox-size-section);
-  color: var(--nox-text);
-  margin: 0;
-}
-
-/* Hero action buttons — Watch / Details.
-   Reference primary action: --watchPageBtn. In the sampled dark theme
-   that resolves to --primary-3 (#a4b3c9) with --primary-1 text. */
-.nox-hero-actions,
-.homePage .verticalSection:first-of-type .detailButtons {
+.sectionTitle {
   display: flex;
-  gap: var(--nox-space-2);
-  flex-wrap: wrap;
-}
-
-.nox-hero-actions .btnPlay,
-.homePage .verticalSection:first-of-type .btnPlay,
-.btnPlay {
-  background-color: var(--nox-text-secondary);      /* --watchPageBtn -> --primary-3 */
-  color: var(--nox-surface);
-  border: 0;
-  border-radius: var(--nox-radius-pill);
-  font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  transition: filter var(--nox-dur-fast) var(--nox-ease),
-              transform var(--nox-dur-fast) var(--nox-ease);
-}
-.btnPlay:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-/* Secondary — the reference uses --callToActionBtn (--primary-1) here. */
-.nox-hero-actions .btnDetails,
-.btnDetails,
-.btnMore,
-.btnShuffle {
-  background-color: var(--nox-surface);
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2ch;
+  font-size: 1.7rem;
+  font-weight: 700;
   color: var(--nox-text-secondary);
-  border: 1px solid var(--nox-border);
-  border-radius: var(--nox-radius-pill);
-  font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  transition: background-color var(--nox-dur-fast) var(--nox-ease),
-              color var(--nox-dur-fast) var(--nox-ease);
-}
-.btnDetails:hover,
-.btnMore:hover,
-.btnShuffle:hover {
-  background-color: color-mix(in srgb, var(--nox-muted) 15%, var(--nox-surface));
-  color: var(--nox-text);
+  letter-spacing: -1.5px;
 }
 
-
-/* ==================================================================
- * 5. HOME — CAROUSEL ROWS
- * HOME .HomeListSection: display flex; gap 1rem; overflow auto;
- *   padding .7rem; margin .3rem .5rem 1.3rem; no scroll-snap.
- * Jellyfin's equivalent is the .emby-scroller / .itemsContainer pair,
- * with arrow buttons in .emby-scrollbuttons.
- * ================================================================== */
-.emby-scroller-container { position: relative; }
-
-.emby-scroller {
-  padding: .7rem;                                   /* HOME .HomeListSection */
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+.sectionTitleText {
+  color: inherit;
+  font: inherit;
 }
 
-/* Scrollbars are hidden inside rows (matching upstream) and revealed on
-   hover as a thin themed bar, which the brief asks for. */
-.emby-scroller::-webkit-scrollbar { height: 0; width: 0; display: none; }
-.emby-scroller-container:hover .emby-scroller::-webkit-scrollbar { height: 6px; display: block; }
-.emby-scroller-container:hover .emby-scroller::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, var(--nox-muted) 50%, transparent);
-  border-radius: var(--nox-radius-xs);
+.sectionTitle .material-icons,
+.sectionTitle .md-icon {
+  font-size: 1.4rem;
+  color: var(--nox-accent);
 }
 
-.scrollSlider { padding-bottom: var(--nox-space-1); }
-
-.itemsContainer {
-  gap: var(--nox-space-4);                          /* HOME: 1rem */
-  margin: .3rem .5rem 1.3rem;                       /* HOME .HomeListSection */
-}
-
-/* Optional snap. The reference does NOT use scroll-snap anywhere; the
-   brief asks for it, so Nox adds a gentle x-proximity snap that never
-   fights a free flick. Delete these two rules for upstream behaviour. */
-.emby-scroller { scroll-snap-type: x proximity; }
-.cardBox { scroll-snap-align: start; }
-
-/* Arrow buttons. Upstream home rows have no arrows at all; Jellyfin
-   always renders them, so Nox reveals them on hover/focus only. */
-.emby-scrollbuttons {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--nox-dur-base) var(--nox-ease);
-  z-index: 2;
-}
-.emby-scroller-container:hover .emby-scrollbuttons,
-.emby-scroller-container:focus-within .emby-scrollbuttons {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.emby-scrollbuttons-button {
-  background-color: color-mix(in srgb, var(--nox-surface) 78%, transparent);
-  -webkit-backdrop-filter: blur(var(--nox-blur-sm));
-  backdrop-filter: blur(var(--nox-blur-sm));
-  color: var(--nox-text-secondary);
-  border: 1px solid var(--nox-border);
-  border-radius: var(--nox-radius-full);
-  width: 2.25rem;
-  height: 2.25rem;
-  transition: color var(--nox-dur-fast) var(--nox-ease),
-              background-color var(--nox-dur-fast) var(--nox-ease);
-}
-.emby-scrollbuttons-button:hover {
-  color: var(--nox-surface);
-  background-color: var(--nox-text-secondary);
-}
-
-
-/* ==================================================================
- * 6. CARDS
- * HOME .MovieCardSmall: 10rem x 15rem (160x240 live), radius .5rem,
- *   image object-fit cover, transition all .1s ease-in-out,
- *   hover shadow 0 1px 2px --primary-3, title --primary-2 clamped to 2
- *   lines with a 1.2rem line-height, hover title --primary-3.
- * ================================================================== */
-.cardBox { margin: 0; }
-
-.card {
-  border-radius: var(--nox-radius-card);
-  transition: transform var(--nox-dur-base) var(--nox-ease),
-              box-shadow var(--nox-dur-base) var(--nox-ease);
-  will-change: transform;
-}
-
-.cardScalable {
-  border-radius: var(--nox-radius-card);
-  overflow: hidden;
-  box-shadow: var(--nox-shadow-card);
-}
-
-.cardImageContainer {
-  border-radius: var(--nox-radius-card);
-  background-color: var(--nox-surface);
-  background-size: cover;
-  background-position: center;
-  transition: box-shadow var(--nox-dur-fastest) var(--nox-ease-in-out),  /* HOME: .1s */
-              filter var(--nox-dur-base) var(--nox-ease);
-}
-
-.cardPadder-poster { padding-bottom: 150%; }        /* 10:15, upstream ratio */
-
-.card:hover .cardScalable,
-.card:focus-within .cardScalable {
-  box-shadow: var(--nox-shadow-card-hover);          /* HOME hover shadow */
-}
-
-/* Lift + scale. NOTE: upstream only swaps the shadow and the title
-   colour — the scale is an authored enhancement the brief requested.
-   Kept subtle (2%) so it reads as depth rather than motion. */
-.card:hover,
-.card:focus-within { transform: translateY(-2px) scale(1.02); }
-
-.card:hover .cardImageContainer { filter: brightness(1.06); }
-
-/* Card text */
-.cardText {
-  font-family: var(--nox-font-body);
-  line-height: var(--nox-leading-tight);             /* HOME: 1.2rem */
-}
-.cardText-first {
-  color: var(--nox-text-secondary);
-  font-weight: var(--nox-weight-medium);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;                             /* HOME */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  transition: color var(--nox-dur-base) var(--nox-ease);
-}
-.card:hover .cardText-first,
-.card:focus-within .cardText-first { color: var(--nox-text-secondary); }
-
-.cardText-secondary {
+.sectionTitleContainer .btnMore,
+.sectionTitleContainer .listOptionsMenu {
   color: var(--nox-muted);
-  font-size: var(--nox-size-small);
+  font-size: 0.8rem;
 }
 
-.cardText-icon { color: var(--nox-star); }            /* favorite marker */
-
-/* Footer overlay strip (runtime, play count, etc.). */
-.innerCardFooter {
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,.85));
-  color: var(--nox-text);
-  border-radius: 0 0 var(--nox-radius-card) var(--nox-radius-card);
+.sectionTitleContainer .btnMore:hover {
+  color: var(--nox-accent);
 }
 
-.cardIndicators { color: var(--nox-text); }
+/* ==========================================================================
+   6. HERO AND BACKDROP
+   --------------------------------------------------------------------------
+   Jellyfin ships no first-class home hero, so Nox styles the band it does
+   have — the detail page's backdrop area — plus any band a plugin renders
+   through the `data-type="backdrop"` hook. Both get the same floating rounded
+   card and the plaque underneath.
+   ========================================================================== */
 
-/* Played / unplayed corner indicator. */
-.playedIndicator {
-  background-color: var(--nox-accent);
-  color: var(--nox-accent-contrast);
-  border-radius: var(--nox-radius-sm);
+.detailPageWrapperContainer {
+  background-color: var(--nox-bg);
 }
-
-/* Hover overlay buttons on a card (play, info, favourite). */
-.cardOverlayButton,
-.cardOverlayContainer .material-icons {
-  color: var(--nox-text);
-  border-radius: var(--nox-radius-sm);
-  transition: color var(--nox-dur-fast) var(--nox-ease);
-}
-.cardOverlayButton:hover { color: var(--nox-accent); }
-
-/* ------------------------------------------------------------------
- * Progress bar — HOME .watchProgress: .3rem tall, .3rem radius,
- * track --primary-2, absolutely positioned at left:0.
- * ------------------------------------------------------------------ */
-.itemProgressBar {
-  background-color: color-mix(in srgb, var(--nox-muted) 35%, transparent);
-  height: var(--nox-progress-height);
-  border-radius: var(--nox-radius-xs);
-  overflow: hidden;
-}
-
-.itemProgressBarForeground {
-  background-color: var(--nox-accent);
-  border-radius: var(--nox-radius-xs);
-  transition: width var(--nox-dur-slow) var(--nox-ease);
-}
-
-.itemProgressBar-denied { background-color: var(--nox-danger); }
-
-
-/* ==================================================================
- * 7. DETAIL PAGE
- * No upstream equivalent is shipped to CSS — the reference is a
- * single-page catalogue. Nox composes the same anatomy it uses on the
- * home hero: full-bleed backdrop, scrim, then a stacked content column
- * on the sampled --bg-color.
- * ================================================================== */
-.detailPageWrapperContainer { background-color: var(--nox-bg); }
 
 .detailPagePrimaryContainer {
   position: relative;
-  background-color: transparent;
-}
-
-.backdropContainer {
-  border-radius: 0;
+  margin: 0 1rem 1.5rem;
+  padding: 0;
+  border-radius: var(--nox-radius-hero);
   overflow: hidden;
+  isolation: isolate;
+  background-color: var(--nox-surface);
 }
 
-/* Scrim so the poster/title column never sits on undarkened artwork. */
+.detailPagePrimaryContainer .backdropContainer,
+.detailPagePrimaryContainer .backdropImage {
+  border-radius: inherit;
+}
+
+.detailPagePrimaryContainer .backdropContainer {
+  position: relative;
+}
+
 .detailPagePrimaryContainer .backdropContainer::after {
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--nox-bg) 10%, transparent) 0%,
-    color-mix(in srgb, var(--nox-bg) 62%, transparent) 52%,
-    var(--nox-bg) 94%
-  );
+  background:
+    linear-gradient(180deg, rgba(27, 25, 25, 0) 35%, rgba(27, 25, 25, 0.92) 100%),
+    linear-gradient(90deg, rgba(27, 25, 25, 0.75) 0%, rgba(27, 25, 25, 0) 60%);
 }
 
-.detailPageContent { padding-top: var(--nox-space-5); }
+.detailPagePrimaryContent {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+}
 
-.detailLogo { max-height: 9rem; }
-
-.itemName,
-.detailPageContent .itemName {
+.detailPagePrimaryContainer .itemName {
   font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  letter-spacing: var(--nox-tracking-tight);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
   color: var(--nox-text);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
 }
 
-.detailPageContent .itemMiscInfo,
-.detailPageContent .mediaInfoItem {
-  color: var(--nox-muted);
-  font-size: var(--nox-size-small);
-}
-
-.detailPageContent .itemOverview,
-.detailPageContent .overview {
+.detailPagePrimaryContainer .itemMiscInfo,
+.detailPagePrimaryContainer .mediaInfoItem,
+.detailPagePrimaryContainer .itemOverview {
   color: var(--nox-text-secondary);
-  line-height: var(--nox-leading-base);
 }
 
-/* Action row — Play gets the sampled watch colour, siblings get the
-   outlined secondary treatment from section 4. */
-.detailButtons .btnPlay {
-  background-color: var(--nox-text-secondary);
-  color: var(--nox-surface);
+.detailPagePrimaryContainer .itemOverview {
+  max-width: 62ch;
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
-.detailButton,
-.mainDetailButtons .detailButton {
+/* The plaque: a rounded panel holding the action buttons, outlined in the page
+   colour so it reads as sitting on top of the hero rather than inside it. */
+.detailPagePrimaryContainer .mainDetailButtons,
+.detailPagePrimaryContainer .detailButtons {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1rem;
   background-color: var(--nox-surface);
-  color: var(--nox-text-secondary);
-  border: 1px solid var(--nox-border);
-  border-radius: var(--nox-radius-pill);
-  transition: background-color var(--nox-dur-fast) var(--nox-ease),
-              color var(--nox-dur-fast) var(--nox-ease);
+  border-radius: var(--nox-radius-plaque);
+  outline: 0.7rem solid var(--nox-bg);
 }
-.detailButton:hover {
-  background-color: color-mix(in srgb, var(--nox-muted) 15%, var(--nox-surface));
+
+[data-type="backdrop"] {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--nox-radius-hero);
+  background-color: var(--nox-surface);
+}
+
+[data-type="backdrop"] .backdropImage {
+  border-radius: inherit;
+}
+
+/* ==========================================================================
+   7. CAROUSEL ROWS
+   ========================================================================== */
+
+.emby-scroller-container {
+  position: relative;
+  margin: 0;
+}
+
+.emby-scroller {
+  padding-bottom: 0.5rem;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.emby-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollSlider,
+.itemsContainer {
+  gap: var(--nox-card-gap);
+  padding: 0.25rem 0.25rem 0.5rem;
+}
+
+.emby-scroller .cardBox {
+  scroll-snap-align: start;
+  margin: 0;
+}
+
+.emby-scrollbuttons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.emby-scrollbuttons-button {
+  pointer-events: auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--nox-border);
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.72);
+  color: var(--nox-text);
+  opacity: 0;
+  transition: opacity var(--nox-dur-base) var(--nox-ease);
+}
+
+.emby-scroller-container:hover .emby-scrollbuttons-button,
+.emby-scrollbuttons-button:focus-visible {
+  opacity: 1;
+}
+
+.emby-scrollbuttons-button:hover {
+  background-color: var(--nox-accent);
+  color: var(--nox-on-accent);
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   8. CARDS
+   ========================================================================== */
+
+.card {
+  border-radius: var(--nox-radius-card);
+  background-color: transparent;
+  transition:
+    transform var(--nox-dur-base) var(--nox-ease-out),
+    filter var(--nox-dur-base) var(--nox-ease);
+}
+
+.card .cardScalable,
+.card .cardImageContainer,
+.card .cardPadder,
+.card .cardPadder-poster {
+  border-radius: var(--nox-radius-card);
+}
+
+.card .cardImageContainer,
+.card .cardPadder,
+.card .cardPadder-poster {
+  overflow: hidden;
+  background-color: var(--nox-surface-raised);
+}
+
+.card .cardImageContainer::after {
+  border-radius: var(--nox-radius-card);
+  box-shadow: inset 0 0 0 1px var(--nox-border);
+}
+
+.cardImage {
+  transition: transform var(--nox-dur-slow) var(--nox-ease-out);
+}
+
+.card:hover .cardImage,
+.card:focus-within .cardImage {
+  transform: scale(1.04);
+}
+
+.card:hover .cardScalable,
+.card:focus-within .cardScalable {
+  box-shadow: var(--nox-shadow-card);
+}
+
+.cardText {
+  padding: 0.45rem 0.15rem 0;
+}
+
+.cardText-first {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--nox-text);
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  transition: color var(--nox-dur-fast) var(--nox-ease);
+}
+
+.card:hover .cardText-first,
+.card:focus-within .cardText-first {
+  color: var(--nox-text-secondary);
+}
+
+.cardText-secondary {
+  font-size: 0.78rem;
+  color: var(--nox-muted);
+}
+
+.cardText-icon {
+  color: var(--nox-accent);
+}
+
+.innerCardFooter {
+  padding: 0.4rem 0.5rem;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85));
+  border-radius: 0 0 var(--nox-radius-card) var(--nox-radius-card);
+}
+
+.cardIndicators,
+.cardIndicator {
+  border-radius: 0.3rem;
+  background-color: rgba(0, 0, 0, 0.72);
   color: var(--nox-text);
 }
 
-.detailButton-icon { color: inherit; }
+.playedIndicator {
+  border-radius: 0.3rem;
+  background-color: var(--nox-accent);
+  color: var(--nox-on-accent);
+}
 
-/* Seasons / episodes ------------------------------------------------ */
-.detailSection,
-.itemDetailsGroup {
-  background-color: var(--nox-surface-raised);
-  border: 1px solid var(--nox-border);
+.cardOverlayButton {
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.72);
+  color: var(--nox-text);
+}
+
+.cardOverlayButton:hover,
+.cardOverlayButton:focus-visible {
+  background-color: var(--nox-accent);
+  color: var(--nox-on-accent);
+}
+
+.itemProgressBar {
+  height: 0.3rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: rgba(164, 179, 201, 0.25);
+}
+
+.itemProgressBarForeground {
+  border-radius: 999px;
+  background-color: var(--nox-accent);
+}
+
+.itemProgressBar-denied {
+  background-color: var(--nox-muted);
+}
+
+/* ==========================================================================
+   9. DETAIL PAGE
+   ========================================================================== */
+
+.detailPageContent,
+.detailPageWrapperContainer .detailSection {
+  color: var(--nox-text);
+}
+
+.detailLogo {
+  max-height: 7rem;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.65));
+}
+
+.itemDetailsGroup,
+.detailSection {
   border-radius: var(--nox-radius-dialog);
-  padding: var(--nox-space-4);
-  margin-bottom: var(--nox-space-4);
+}
+
+.detailSectionHeader,
+.selectContainer,
+.listItem {
+  color: var(--nox-text-secondary);
 }
 
 .listItem {
-  border-radius: var(--nox-radius-pill);
+  border-radius: 0.6rem;
   transition: background-color var(--nox-dur-fast) var(--nox-ease);
 }
+
 .listItem:hover {
-  background-color: color-mix(in srgb, var(--nox-muted) 15%, transparent);
+  background-color: rgba(164, 179, 201, 0.08);
 }
 
-.listItemImage,
-.listItemImageContainer { border-radius: var(--nox-radius-card); }
-
-.listItemBodyText { color: var(--nox-text); }
-.listItemBody .secondaryText { color: var(--nox-muted); }
-
-/* Tabs (seasons, "more like this" toggles). */
-.emby-tabs,
-.emby-tab-button { border-radius: var(--nox-radius-pill); }
-
-.emby-tab-button { color: var(--nox-muted); }
-
-.emby-tab-button-active,
-.emby-tab-button.emby-tab-button-active {
-  color: var(--nox-text);
-  border-bottom: 2px solid var(--nox-accent);
+.listItemImage {
+  border-radius: 0.4rem;
 }
 
-
-/* ==================================================================
- * 8. VIDEO PLAYER
- * Minimal chrome, recoloured OSD. Jellyfin's control bar is
- * .videoOsdBottom with .osdControls inside.
- * ================================================================== */
-.videoOsdBottom {
-  background: linear-gradient(
-    0deg,
-    rgba(0,0,0,.92) 0%,
-    rgba(0,0,0,.72) 42%,
-    transparent 100%
-  );
-  border-top: 0;
-  padding-bottom: var(--nox-space-2);
+.listItemBodyText {
+  color: var(--nox-text-secondary);
 }
 
-.videoOsdBottom .osdTitle {
-  font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  color: var(--nox-text);
+.mediaInfoItem {
+  color: var(--nox-muted);
 }
 
-.videoOsdBottom .osdTextContainer,
-.videoOsdBottom .endsAtText { color: var(--nox-text-secondary); }
-
-.osdControls .paper-icon-button-light,
-.osdControls .material-icons {
-  color: var(--nox-text);
-  border-radius: var(--nox-radius-pill);
-  transition: color var(--nox-dur-fast) var(--nox-ease),
-              background-color var(--nox-dur-fast) var(--nox-ease);
+.emby-tabs {
+  border-bottom: 1px solid var(--nox-border);
 }
-.osdControls .paper-icon-button-light:hover {
+
+.emby-tab-button {
+  font-family: var(--nox-font);
+  color: var(--nox-muted);
+}
+
+.emby-tab-button:hover {
+  color: var(--nox-text-secondary);
+}
+
+.emby-tab-button-active {
   color: var(--nox-accent);
-  background-color: rgba(255,255,255,.08);
 }
 
-.osdControls .paper-icon-button-light.paper-icon-button-light-active,
-.osdControls .btnActive { color: var(--nox-accent); }
-
-/* Seek + volume sliders. Jellyfin builds these from a wrapper div plus
-   a filled/unfilled progress pair and writes the widths inline, so the
-   fills are styled by class, never by value. */
-.osdControls .mdl-slider-background-flex,
-.osdControls .mdl-slider-background-flex-inner {
-  background-color: rgba(255,255,255,.28);
-  border-radius: var(--nox-radius-xs);
-}
-.osdControls .mdl-slider-background-flex-inner {
+.emby-tabs-slider {
   background-color: var(--nox-accent);
 }
-.osdControls .sliderBubble {
-  background-color: rgba(0,0,0,.85);
-  color: var(--nox-text);
-  border-radius: var(--nox-radius-sm);
+
+.detailButton,
+.btnPlay,
+.mainDetailButtons .button-link {
+  border-radius: var(--nox-radius-button);
 }
-.osdControls .sliderMarker { background-color: var(--nox-accent); }
 
-/* Chapters, quality badge, sync overlay. */
-.chapterThumbContainer { border-radius: var(--nox-radius-card); }
-.chapterThumbText { color: var(--nox-text); }
-.chapterThumbImage { border-radius: var(--nox-radius-card); }
-
-.videoOsdBottom .videoQuality,
-.playerStats .playerStatsInner {
-  background-color: color-mix(in srgb, var(--nox-surface) 86%, transparent);
+.detailButton {
   color: var(--nox-text-secondary);
-  border-radius: var(--nox-radius-pill);
+  background-color: rgba(164, 179, 201, 0.1);
 }
 
-/* Subtitle rendering — MAIN pairs subtitles with Roboto Mono. */
-.videoSubtitles,
-.subtitleAppearancePreview { font-family: var(--nox-font-mono); }
+.detailButton:hover,
+.detailButton:focus-visible {
+  color: var(--nox-text);
+  background-color: rgba(164, 179, 201, 0.18);
+}
 
-/* Spinner / buffering indicator. */
-.mdl-spinner__layer,
-.spinnerIcon { border-color: var(--nox-accent); }
+.btnPlay,
+.detailButton.btnPlay {
+  background-color: var(--nox-accent);
+  color: var(--nox-on-accent);
+}
 
-/* "Up next" card. */
+.btnPlay:hover,
+.btnPlay:focus-visible {
+  background-color: color-mix(in srgb, var(--nox-accent) 86%, #fff);
+  color: var(--nox-on-accent);
+}
+
+.btnPlay .material-icons,
+.detailButton .material-icons {
+  color: inherit;
+}
+
+/* ==========================================================================
+   10. VIDEO PLAYER / OSD
+   ========================================================================== */
+
+.videoOsdBottom {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0) 100%);
+  border-top: none;
+}
+
+.osdTitle {
+  font-family: var(--nox-font-display);
+  color: var(--nox-text);
+  letter-spacing: -1px;
+}
+
+.osdTextContainer {
+  font-family: var(--nox-font);
+  color: var(--nox-text-secondary);
+}
+
+/* Jellyfin paints the seek/volume fill with an inline background-color, so
+   the accent has to be forced here. */
+.mdl-slider-background-flex-inner {
+  background-color: var(--nox-accent) !important;
+}
+
+.sliderBubble {
+  border-radius: 0.3rem;
+  background-color: var(--nox-surface);
+  color: var(--nox-text);
+}
+
+.chapterThumbContainer {
+  overflow: hidden;
+  border-radius: 0.4rem;
+}
+
+.chapterThumbText {
+  font-family: var(--nox-font);
+  color: var(--nox-text-secondary);
+}
+
 .upNextContainer,
-.upNextDialog { border-radius: var(--nox-radius-dialog); }
+.upNextDialog {
+  background-color: var(--nox-surface);
+  border: 1px solid var(--nox-border);
+  border-radius: var(--nox-radius-dialog);
+}
 
-.upNextDialog { box-shadow: var(--nox-shadow-dialog); }
+.videoSubtitles,
+.videoSubtitlesInner {
+  font-family: var(--nox-font);
+}
 
+.playerStats {
+  border-radius: var(--nox-radius-dialog);
+  background-color: rgba(0, 0, 0, 0.86);
+  color: var(--nox-text-secondary);
+  font-family: var(--nox-font);
+}
 
-/* ==================================================================
- * 9. DIALOGS, TOASTS, POPUP MENUS
- * MAIN .modalOverlay: rgba(0,0,0,.7) + blur(10px) grayscale(.2)
- * MAIN .modalCard:    color-mix(--primary-1 90%, --bg-color),
- *                     1px color-mix(--primary-2 30%), radius 1rem,
- *                     max-width 440px, shadow 0 24px 48px rgba(0,0,0,.6)
- * ================================================================== */
+.playerStats .playerStatsTitle {
+  color: var(--nox-accent);
+}
+
+/* ==========================================================================
+   11. DIALOGS, TOASTS, MENUS
+   ========================================================================== */
+
 .dialogBackdrop {
-  background-color: var(--nox-overlay);
-  -webkit-backdrop-filter: var(--nox-overlay-blur);
-  backdrop-filter: var(--nox-overlay-blur);
+  background-color: rgba(0, 0, 0, 0.72);
+  -webkit-backdrop-filter: blur(10px) grayscale(0.2);
+  backdrop-filter: blur(10px) grayscale(0.2);
 }
 
 .dialog,
-.formDialog {
+.formDialog,
+.actionSheet {
   background-color: var(--nox-surface-raised);
   color: var(--nox-text);
   border: 1px solid var(--nox-border);
   border-radius: var(--nox-radius-dialog);
-  box-shadow: var(--nox-shadow-dialog);
-  max-width: 27.5rem;                                /* 440px */
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
 }
 
 .dialogHeader,
-.formDialogHeader {
-  border-bottom: 1px solid var(--nox-border);
-}
-
 .dialogHeaderTitle,
-.formDialogHeaderTitle {
+.dialogFooter {
+  background-color: transparent;
+  color: var(--nox-text);
+}
+
+.dialogHeaderTitle {
   font-family: var(--nox-font-display);
-  font-size: var(--nox-size-dialog);
-  font-weight: var(--nox-weight-semi);
-  letter-spacing: var(--nox-tracking-tight);
-  color: var(--nox-text);
+  font-weight: 700;
+  letter-spacing: -1.5px;
 }
 
-.dialogContentInner,
-.formDialogContent { color: var(--nox-text-secondary); }
-
-.dialogFooter,
-.formDialogFooter {
-  border-top: 1px solid var(--nox-border);
-  gap: var(--nox-space-2);
+.dialogContentInner {
+  color: var(--nox-text-secondary);
 }
 
-/* Toasts */
-.toastContainer { z-index: 100; }
-
-.toast {
+.toast,
+.toastContainer .toast {
   background-color: var(--nox-surface);
-  color: var(--nox-text-secondary);
-  border: 1px solid var(--nox-muted);
-  border-radius: var(--nox-radius-pill);
-  box-shadow: var(--nox-shadow-popover);
-}
-
-/* Action sheets / popup menus. */
-.actionSheet,
-.actionSheetContent,
-.navMenuOption {
-  background-color: var(--nox-surface-overlay);
-  color: var(--nox-text-secondary);
-}
-
-.actionSheetContent { border-radius: var(--nox-radius-dialog) var(--nox-radius-dialog) 0 0; }
-
-.navMenuOption {
-  border-radius: var(--nox-radius-pill);
-  transition: background-color var(--nox-dur-fast) var(--nox-ease),
-              color var(--nox-dur-fast) var(--nox-ease);
-}
-.navMenuOption:hover {
-  background-color: color-mix(in srgb, var(--nox-muted) 18%, transparent);
-  color: var(--nox-text);
-}
-.navMenuOption-selected {
-  background-color: color-mix(in srgb, var(--nox-muted) 24%, transparent);
-  color: var(--nox-text);
-}
-
-/* Drawer */
-.mainDrawer { background-color: var(--nox-surface); }
-.mainDrawer .navMenuOption { border-radius: var(--nox-radius-pill); }
-
-/* Tooltips — the reference uses --bg-gradient with a --bg-color border. */
-.tooltip,
-[role="tooltip"] {
-  background-color: var(--nox-bg-gradient);
-  color: var(--nox-text-secondary);
-  border: 1px solid var(--nox-bg);
-  border-radius: var(--nox-radius-xs);
-}
-
-
-/* ==================================================================
- * 10. FORMS, INPUTS, BUTTONS
- * ================================================================== */
-.emby-input,
-.emby-textarea,
-.emby-select,
-select.emby-select {
-  background-color: color-mix(in srgb, var(--nox-surface) 70%, transparent);
   color: var(--nox-text);
   border: 1px solid var(--nox-border);
-  border-radius: var(--nox-radius-pill);
-  font-family: var(--nox-font-body);
-  transition: border-color var(--nox-dur-fast) var(--nox-ease),
-              box-shadow var(--nox-dur-fast) var(--nox-ease);
+  border-radius: var(--nox-radius-button);
+  font-family: var(--nox-font);
+}
+
+.navMenuOption,
+.actionSheetMenuItem {
+  color: var(--nox-text-secondary);
+  border-radius: 0.4rem;
+  transition: background-color var(--nox-dur-fast) var(--nox-ease);
+}
+
+.navMenuOption:hover,
+.actionSheetMenuItem:hover,
+.navMenuOption-selected {
+  background-color: rgba(164, 179, 201, 0.12);
+  color: var(--nox-text);
+}
+
+.mainDrawer {
+  background-color: var(--nox-surface);
+  border-right: 1px solid var(--nox-border);
+}
+
+/* Tooltips are drawn inline with the surface colour by the client. */
+.tooltip,
+.react-tooltip {
+  background-color: var(--nox-bg-gradient) !important;
+  color: var(--nox-text-secondary) !important;
+  border: 1px solid var(--nox-bg);
+  border-radius: 0.3rem !important;
+  font-family: var(--nox-font);
+}
+
+/* ==========================================================================
+   12. FORMS, INPUTS, BUTTONS
+   ========================================================================== */
+
+.emby-input,
+.emby-textarea,
+.emby-select {
+  background-color: var(--nox-bg);
+  color: var(--nox-text-secondary);
+  border: 1px solid var(--nox-muted);
+  border-radius: 0.5rem;
+  font-family: var(--nox-font);
+  caret-color: var(--nox-accent);
+  transition:
+    border-color var(--nox-dur-fast) var(--nox-ease),
+    background-color var(--nox-dur-fast) var(--nox-ease);
 }
 
 .emby-input:focus,
 .emby-textarea:focus,
 .emby-select:focus {
   border-color: var(--nox-accent);
-  box-shadow: var(--nox-shadow-focus);
+  background-color: var(--nox-surface);
   outline: none;
+  box-shadow: var(--nox-focus-ring);
 }
 
-.emby-input::placeholder { color: var(--nox-muted); }
+.emby-input::placeholder,
+.emby-textarea::placeholder {
+  color: var(--nox-muted);
+}
 
-.emby-checkbox:checked + span + .checkboxOutline,
-.checkboxOutline { border-color: var(--nox-border-strong); }
-.emby-checkbox:checked + span + .checkboxOutline {
+.emby-select {
+  cursor: pointer;
+}
+
+.emby-checkbox:checked + span::before,
+.mdl-switch__input:checked + .mdl-switch__label::after,
+.mdl-switch.is-checked .mdl-switch__thumb {
   background-color: var(--nox-accent);
   border-color: var(--nox-accent);
 }
 
-/* Buttons ----------------------------------------------------------- */
+.mdl-switch__track {
+  background-color: rgba(164, 179, 201, 0.3);
+}
+
 .emby-button,
 .raised,
-.button-flat {
-  font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  border-radius: var(--nox-radius-pill);
-  transition: background-color var(--nox-dur-fast) var(--nox-ease),
-              color var(--nox-dur-fast) var(--nox-ease),
-              filter var(--nox-dur-fast) var(--nox-ease),
-              transform var(--nox-dur-fast) var(--nox-ease);
+.button-flat,
+.button-submit {
+  font-family: var(--nox-font);
+  letter-spacing: -0.5px;
+  text-transform: none;
+  border-radius: var(--nox-radius-button);
+  transition:
+    background-color var(--nox-dur-fast) var(--nox-ease),
+    color var(--nox-dur-fast) var(--nox-ease);
 }
 
-.raised,
+.emby-button.raised,
 .button-submit,
-.btnSubmit {
+.emby-button.block {
   background-color: var(--nox-accent);
-  color: var(--nox-accent-contrast);
-  border: 0;
+  color: var(--nox-on-accent);
+  font-weight: 600;
 }
-.raised:hover,
-.button-submit:hover,
-.btnSubmit:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.emby-button.raised:hover,
+.button-submit:hover {
+  background-color: color-mix(in srgb, var(--nox-accent) 86%, #fff);
+}
 
 .button-flat {
-  background-color: transparent;
   color: var(--nox-text-secondary);
 }
+
 .button-flat:hover {
-  background-color: color-mix(in srgb, var(--nox-muted) 15%, transparent);
-  color: var(--nox-text);
+  color: var(--nox-accent);
 }
 
-.btnDelete,
-.btnCancel { color: var(--nox-text-secondary); }
+.checkboxOutline,
+.emby-checkbox-outer {
+  border-color: var(--nox-muted);
+  border-radius: 0.25rem;
+}
 
-/* Switch */
-.mdl-switch__track { background-color: color-mix(in srgb, var(--nox-muted) 40%, transparent); }
-.mdl-switch.is-checked .mdl-switch__track { background-color: color-mix(in srgb, var(--nox-accent) 55%, transparent); }
-.mdl-switch__thumb { background-color: var(--nox-text-secondary); }
-.mdl-switch.is-checked .mdl-switch__thumb { background-color: var(--nox-accent); }
+.starIcon {
+  color: var(--nox-accent);
+}
 
-/* Search */
-.searchfields { border-radius: var(--nox-radius-full); }
-.searchfields .emby-input { border-radius: var(--nox-radius-full); }
-
-/* Settings ---------------------------------------------------------- */
-.selectContainer,
-.checkboxContainer,
-.listItem-border { border-color: var(--nox-border); }
-
-.settingsCard,
-.paperList,
-.listItemIcon { background-color: var(--nox-surface); }
-
-.settingsCard { border-radius: var(--nox-radius-dialog); }
-
-/* Numeric badges (unwatched counts, etc.). */
-.countIndicator,
-.fullSyncIndicator {
+.countIndicator {
+  border-radius: 0.3rem;
   background-color: var(--nox-accent);
-  color: var(--nox-accent-contrast);
-  border-radius: var(--nox-radius-sm);
+  color: var(--nox-on-accent);
 }
 
-/* Rating stars */
-.starIcon,
-.ratingStar { color: var(--nox-star); }
+.searchfields .emby-input {
+  padding-left: 1rem;
+  border-radius: var(--nox-radius-pill);
+}
 
+/* ==========================================================================
+   13. LOGIN AND FIRST-RUN SETUP
+   ========================================================================== */
 
-/* ==================================================================
- * 11. LOGIN
- * MAIN .authPage: grid 1.25fr / .75fr with 2rem 4rem padding.
- * Jellyfin's login is a single centred column; Nox matches the
- * reference's card treatment (radius .75rem, --primary-1 surface).
- * ================================================================== */
 .loginPage,
-#loginPage {
+.readOnlyContent,
+.setupPage {
   background-color: var(--nox-bg);
 }
 
-.loginPage .readOnlyContent,
-.loginPage form {
-  background-color: var(--nox-surface-raised);
-  border: 1px solid var(--nox-border);
-  border-radius: var(--nox-radius-lg);
-  box-shadow: var(--nox-shadow-dialog);
-  padding: var(--nox-space-6);
-  max-width: 26rem;
-  margin: 0 auto;
+.loginPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.loginPage .pageTitle,
-.loginPage h1 {
-  font-family: var(--nox-font-display);
-  font-weight: var(--nox-weight-semi);
-  color: var(--nox-text);
+/* Jellyfin draws the login form bare on the page. Wrapping it in a raised card
+   is the whole point of this section. */
+.loginPage .manualLoginForm,
+.loginPage .readOnlyContent,
+.readOnlyContent .formDialog,
+.loginPage form {
+  width: min(26rem, 92vw);
+  padding: 2rem;
+  background-color: var(--nox-surface);
+  border: 1px solid var(--nox-border);
+  border-radius: var(--nox-radius-dialog);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.65);
+}
+
+.loginPage h1,
+.loginPage .loginDisclaimer {
   text-align: center;
 }
 
-.loginPage .emby-input { width: 100%; }
+.loginPage h1 {
+  margin-bottom: 1.25rem;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--nox-text);
+}
 
-.btnForgotPassword,
-.loginPage .button-link {
+.loginPage .emby-input {
+  margin-bottom: 0.75rem;
+}
+
+.loginPage .btnSubmit,
+.loginPage .button-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--nox-accent);
+  color: var(--nox-on-accent);
+  border-radius: var(--nox-radius-button);
+  font-weight: 600;
+}
+
+.btnForgotPassword {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
   color: var(--nox-muted);
-  border-radius: var(--nox-radius-xs);
+  font-size: 0.85rem;
 }
-.btnForgotPassword:hover { color: var(--nox-accent); }
 
-/* Manual-server entry + "select server" list. */
-.cardBox.cardBox-bottompadded .cardScalable,
-#divServerList .cardScalable { border-radius: var(--nox-radius-card); }
+.btnForgotPassword:hover {
+  color: var(--nox-text-secondary);
+}
 
+/* ==========================================================================
+   14. RESPONSIVE
+   ========================================================================== */
 
-/* ==================================================================
- * 12. RESPONSIVE
- * The reference's own breakpoints are 380 / 480 / 768 / 769 / 770 /
- * 1024 (MAIN). Jellyfin's layout breakpoints do not line up with
- * those, so Nox applies the reference's *visual* changes at the
- * nearest Jellyfin-appropriate width instead.
- * ================================================================== */
-
-/* Phones — 375px target. */
-@media (max-width: 480px) {
+@media (max-width: 900px) {
   :root {
-    --nox-size-section: 1.4rem;
-    --nox-card-width: 7.5rem;
-    --nox-card-height: 11.25rem;
-    --nox-gutter: 1rem;
-    --nox-hero-height: 60dvh;
+    --nox-card-width: 8.5rem;
+    --nox-card-height: 12.75rem;
+    --nox-card-gap: 0.9rem;
+    --nox-row-gap: 2.25rem;
   }
-  .itemsContainer { gap: var(--nox-space-3); margin: .3rem .5rem .8rem; }
-  .nox-hero-meta { width: calc(100% - 2rem); margin: var(--nox-space-5) var(--nox-space-4) calc(-1 * var(--nox-space-5)); }
-  .emby-scrollbuttons { display: none; }        /* touch: swipe, not arrows */
-  .sectionTitleContainer { margin-left: var(--nox-space-4); }
+
+  .sectionTitle {
+    font-size: 1.35rem;
+  }
+
+  .detailPagePrimaryContainer {
+    margin: 0.5rem 0.5rem 1rem;
+    border-radius: 1.25rem;
+  }
+
+  .detailPagePrimaryContent {
+    padding: 1.25rem;
+  }
+
+  .detailPagePrimaryContainer .mainDetailButtons,
+  .detailPagePrimaryContainer .detailButtons {
+    padding: 0.7rem 0.8rem;
+    outline-width: 0.45rem;
+  }
 }
 
-/* Tablets / narrow desktop. */
-@media (max-width: 1024px) {
-  :root { --nox-gutter: 3rem; }
+@media (max-width: 600px) {
+  :root {
+    --nox-card-width: 7rem;
+    --nox-card-height: 10.5rem;
+    --nox-card-gap: 0.7rem;
+    --nox-row-gap: 2rem;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.15rem;
+  }
+
+  .cardText-first {
+    font-size: 0.85rem;
+  }
+
+  .detailPagePrimaryContainer .itemOverview {
+    font-size: 0.85rem;
+  }
+
+  .loginPage .manualLoginForm,
+  .loginPage .readOnlyContent,
+  .readOnlyContent .formDialog,
+  .loginPage form {
+    padding: 1.25rem;
+  }
 }
 
-/* Desktop — 1920px target. The reference keeps a fixed 10rem card at
-   every width; Nox honours that and lets section padding carry the
-   difference instead of scaling posters up. */
-@media (min-width: 1600px) {
-  :root { --nox-gutter: 5rem; }
-  .itemsContainer { gap: var(--nox-space-4); }
-  .verticalSection { margin-bottom: var(--nox-space-6); }
+/* ==========================================================================
+   15. MOTION, FALLBACKS, ACCESSIBILITY
+   ========================================================================== */
+
+/* Browsers without backdrop-filter get a solid bar instead of a
+   half-transparent one with no blur behind it. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  @media (max-width: 1099px) {
+    .skinHeader.headroom--not-top {
+      background-color: var(--nox-bg) !important;
+    }
+  }
 }
 
-/* Coarse pointers get no hover affordances. */
-@media (hover: none) {
-  .emby-scrollbuttons { display: none; }
-  .card:hover { transform: none; }
-  .card:hover .cardScalable { box-shadow: var(--nox-shadow-card); }
+/* color-mix() drives a few hover tints. Where it is unsupported the flat
+   accent is used instead, which stays legible. */
+@supports not (color: color-mix(in srgb, red, blue)) {
+  .btnPlay:hover,
+  .btnPlay:focus-visible,
+  .emby-button.raised:hover,
+  .button-submit:hover {
+    background-color: var(--nox-accent);
+  }
 }
 
-/* ==================================================================
- * 13. REDUCED MOTION / FALLBACKS
- * ================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  /* !important: Jellyfin's own component stylesheets declare
-     transitions on nearly every interactive element and are loaded
-     after Custom CSS in some builds, so a plain override loses. */
   *,
   *::before,
   *::after {
-    animation-duration: .01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .card:hover,
-  .card:focus-within { transform: none; }
-  .btnPlay:hover { transform: none; }
-}
 
-/* backdrop-filter is unsupported in a few embedded webviews Jellyfin
-   is used from; fall back to a solid surface so text stays legible. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .skinHeader.headroom--not-top,
-  .skinHeader.skinHeader-withBackground {
-    background-color: var(--nox-bg) !important;
+  .card:hover .cardImage,
+  .card:focus-within .cardImage {
+    transform: none;
   }
-  .dialogBackdrop { background-color: rgba(0,0,0,.86); }
-  .emby-scrollbuttons-button { background-color: var(--nox-surface); }
 }
 
-/* color-mix() is required throughout; on a client too old to support
-   it, fall back to flat sampled colours so the theme still reads. */
-@supports not (background-color: color-mix(in srgb, red 50%, blue)) {
+@media (hover: none) {
+  .card:hover .cardImage {
+    transform: none;
+  }
+
+  .emby-scrollbuttons-button {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .skinHeader,
+  .card,
   .dialog,
-  .formDialog { background-color: var(--nox-surface); }
-  .emby-input,
-  .emby-textarea,
-  .emby-select { background-color: var(--nox-surface); }
-  .card:hover .cardScalable { box-shadow: 0 1px 2px var(--nox-muted); }
+  .emby-button {
+    border: 1px solid ButtonText;
+  }
 }
 
+/* ==========================================================================
+   16. BRITTLE
+   --------------------------------------------------------------------------
+   Everything below depends on a client implementation detail rather than a
+   stable class name: a MUI custom property, a runtime-generated element, a
+   plugin's own hook. None of it is required for Nox to look right. If a
+   Jellyfin update distorts the theme, comment this section out first.
+   ========================================================================== */
 
-/* ==================================================================
- * 14. BRITTLE
- * ------------------------------------------------------------------
- * Everything below reaches for internals that a Jellyfin release can
- * rename or restructure. It is isolated here on purpose: if a Jellyfin
- * update breaks Nox, comment this section out first and re-test.
- * The theme is fully usable without any of it.
- * ================================================================== */
-
-/* --- 14a. Jellyfin palette custom properties ----------------------
-   Jellyfin Web exposes MUI-derived --jf-palette-* variables. The exact
-   set shifts between releases (new keys appear, deprecated ones are
-   dropped), so Nox sets them defensively: unknown keys are simply
-   ignored by the cascade, missing ones fall back to Jellyfin's own
-   defaults. If a release renames these, retint through section 0 only.
-   Reference: jellyfin-web src/themes + @mui/material theme bridge. */
+/* 16a. MUI palette bridge. Mapping Jellyfin's own palette onto the Nox tokens
+   keeps dialogs and controls the client paints with `--jf-palette-*` in step
+   with the rest of the skin. */
 :root {
-  --jf-palette-background-default:   var(--nox-bg);
-  --jf-palette-background-paper:     var(--nox-surface);
-  --jf-palette-primary-main:         var(--nox-accent);
-  --jf-palette-primary-dark:         var(--nox-accent-active);
-  --jf-palette-primary-light:        var(--nox-accent-hover);
-  --jf-palette-primary-contrastText: var(--nox-accent-contrast);
-  --jf-palette-secondary-main:       var(--nox-text-secondary);
-  --jf-palette-error-main:           var(--nox-danger);
-  --jf-palette-warning-main:         var(--nox-star);
-  --jf-palette-info-main:            var(--nox-muted);
-  --jf-palette-text-primary:         var(--nox-text);
-  --jf-palette-text-secondary:       var(--nox-text-secondary);
-  --jf-palette-divider:              var(--nox-border);
-  --jf-palette-action-hover:         color-mix(in srgb, var(--nox-muted) 15%, transparent);
-  --jf-card-borderRadius:            var(--nox-radius-card);
+  --jf-palette-background-default: var(--nox-bg);
+  --jf-palette-background-paper: var(--nox-surface);
+  --jf-palette-text-primary: var(--nox-text);
+  --jf-palette-text-secondary: var(--nox-text-secondary);
+  --jf-palette-primary-main: var(--nox-accent);
+  --jf-palette-primary-contrastText: var(--nox-on-accent);
+  --jf-palette-divider: var(--nox-border);
+  --jf-palette-action-hover: rgba(164, 179, 201, 0.1);
+  --jf-card-borderRadius: var(--nox-radius-card);
 }
 
-/* --- 14b. Headroom.js scroll states --------------------------------
-   Jellyfin uses Headroom.js on .skinHeader, which toggles
-   .headroom--not-top / --pinned / --unpinned. If a release swaps the
-   scroll library, the blur-on-scroll in section 3 stops firing (the
-   header simply stays transparent) — nothing else breaks. */
-
-/* --- 14c. Featured / backdrop rows ---------------------------------
-   Section 4 treats the first home row as the hero. Jellyfin renders
-   that row's items with data-type="backdrop" only when the server has
-   backdrop images; on a library without them the selector matches
-   nothing and the hero band is simply absent. */
-
-/* --- 14d. OPTIONAL: left navigation rail ---------------------------
-   The reference's most distinctive structural trait is a fixed LEFT
-   rail (MAIN .navbar_wrapper: position:fixed; left:.5rem; the panel
-   inside is --primary-1, .5rem radius, a column with 1rem gap and 1rem
-   padding, icons at 1.3rem). Jellyfin's header is a top bar, and CSS
-   alone cannot move the header's children into a rail without
-   detaching the drawer button and the search field from their
-   JS-managed positions. Uncomment to try it; expect to fight
-   Headroom.js and the mobile drawer. Left commented because a theme
-   that breaks navigation on a Jellyfin update is worse than one that
-   looks less like the reference.
-
-@media (min-width: 1100px) {
-  .skinHeader {
-    top: var(--nox-space-2);
-    left: var(--nox-space-2);
-    right: auto;
-    bottom: var(--nox-space-2);
-    width: 3.3rem;
-    border-radius: var(--nox-radius-pill);
-    background-color: var(--nox-surface);
-    border: 1px solid var(--nox-border);
-    flex-direction: column;
-    align-items: center;
-  }
-  .skinHeader .headerLeft,
-  .skinHeader .headerRight {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--nox-space-4);
-  }
-  .skinHeader .pageTitle { display: none; }
-  .mainAnimatedPages,
-  .libraryPage { padding-left: 5rem; }
+/* 16b. The now-playing bar and footer, when the client renders them. */
+.nowPlayingBar,
+.appFooter {
+  background-color: var(--nox-surface);
+  color: var(--nox-text-secondary);
+  border-top: 1px solid var(--nox-border);
 }
-   ------------------------------------------------------------------ */
 
-/* --- 14e. Player internals -----------------------------------------
-   The OSD is built by jellyfin-web at runtime (video-osd.js). Class
-   names in section 8 that begin with .mdl- or .osd are internal and
-   have changed before. A break here degrades the control bar colours
-   only. */
+.nowPlayingBar .nowPlayingBarInfoContainer {
+  color: var(--nox-text);
+}
 
+/* 16c. Settings cards and task rows. */
+.settingsCard,
+.paperList {
+  background-color: var(--nox-surface-raised);
+  border: 1px solid var(--nox-border);
+  border-radius: var(--nox-radius-dialog);
+}
 
-/* ==================================================================
- * END OF NOX
- * ================================================================== */
+/* 16d. Skeleton placeholders, if a plugin paints them.
+   The library sets --base-color and --highlight-color as inline custom
+   properties on each placeholder, so overriding them needs !important. */
+.react-loading-skeleton {
+  --base-color: var(--nox-surface) !important;
+  --highlight-color: var(--nox-bg) !important;
+  background-color: var(--nox-surface) !important;
+  background-image: linear-gradient(
+    90deg,
+    var(--nox-bg),
+    var(--nox-surface-raised),
+    var(--nox-bg)
+  ) !important;
+}
