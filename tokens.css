@@ -1,0 +1,380 @@
+/*
+ * Nox — design tokens
+ * Generated from palette.json (sampled from https://rivestream.ru/).
+ * Author: Nox contributors
+ * License: MIT
+ *
+ * This file is the reference token layer. Jellyfin's Custom CSS box cannot
+ * @import a local file, so nox.css inlines a copy of the :root block below.
+ * If you edit a value here, edit the matching line in nox.css (section 0).
+ *
+ * Every token carries the source it was sampled from as a trailing comment.
+ * File keys:  MAIN = /_next/static/css/991debb0c798841b.css
+ *             HOME = /_next/static/css/d517b9ea2542bdaa.css
+ */
+
+/* ------------------------------------------------------------------ *
+ * OPTIONAL: webfonts.
+ * The reference site loads these seven families from Google Fonts. Nox
+ * ships with system fallbacks only and makes NO external request by
+ * default. Uncomment the @import below if you want the exact display
+ * face; nothing else in the theme depends on it.
+ * ------------------------------------------------------------------ */
+/*
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Roboto+Mono:wght@100..700&display=swap");
+*/
+
+:root {
+  /* ================================================================ *
+   * 1. PALETTE — Nox Dark (default)
+   * Source: MAIN `.dark,:root.dark`
+   * ================================================================ */
+  --nox-bg:                 #1b1919;              /* MAIN .dark  --bg-color       */
+  --nox-bg-gradient:        rgba(49,47,47,.8);    /* MAIN .dark  --bg-gradient    */
+  --nox-surface:            #000;                 /* MAIN .dark  --primary-1      */
+  --nox-muted:              #576b87;              /* MAIN .dark  --primary-2      */
+  --nox-text-secondary:     #a4b3c9;              /* MAIN .dark  --primary-3      */
+  --nox-text:               #fff;                 /* MAIN .dark  --primary-4      */
+
+  --nox-banner-saturation:  30%;                  /* MAIN .dark  --banner-saturation   */
+  --nox-banner-lightness-1: 14%;                  /* MAIN .dark  --banner-lightness-1  */
+  --nox-banner-lightness-2: 10%;                  /* MAIN .dark  --banner-lightness-2  */
+
+  /* Accent ---------------------------------------------------------- *
+   * NOT a fixed brand colour upstream: `--ascent-color` is a runtime
+   * user preference (MAIN :root default `gold`; light root default
+   * `blue`; live session resolved to #2196f3). Nox defaults to the
+   * picker's Red, labelled "Red" in the reference settings UI.
+   * ------------------------------------------------------------------ */
+  --nox-accent:             #f44336;              /* MAIN :root + settings picker option */
+  --nox-accent-rgb:         244,67,54;            /* same, needed for rgba() composition */
+  --nox-accent-contrast:    #fff;                 /* MAIN .btn --primary-4 on accent     */
+  /* Derived, not sampled: the reference brightens with filter:brightness(1.1)
+     on hover rather than swapping colour. These exist only for Jellyfin
+     widgets that cannot take a filter. */
+  --nox-accent-hover:       #ff5a4d;
+  --nox-accent-active:      #d93a2e;
+
+  /* Semantic -------------------------------------------------------- */
+  --nox-danger:             #ef4444;              /* MAIN notification dot / error text  */
+  --nox-danger-strong:      #e74c3c;              /* MAIN destructive button             */
+  --nox-danger-strong-hover:#c0392b;              /* MAIN destructive button :hover      */
+  --nox-star:               #f59e0b;              /* HOME favorite button                */
+
+  /* ================================================================ *
+   * 2. DERIVED SURFACES
+   * Nox-authored blends, all built from sampled values above.
+   * ================================================================ */
+  --nox-surface-raised:     color-mix(in srgb, var(--nox-surface) 90%, var(--nox-bg));  /* MAIN .modalCard recipe */
+  --nox-surface-overlay:    color-mix(in srgb, var(--nox-surface) 82%, var(--nox-bg));
+  --nox-border:             color-mix(in srgb, var(--nox-muted) 30%, transparent);      /* MAIN .modalCard border */
+  --nox-border-strong:      color-mix(in srgb, var(--nox-muted) 55%, transparent);
+  --nox-overlay:            rgba(0,0,0,.7);       /* MAIN .modalOverlay                  */
+  --nox-overlay-blur:       blur(10px) grayscale(.2); /* MAIN .modalOverlay             */
+
+  /* ================================================================ *
+   * 3. TYPOGRAPHY
+   * Source: MAIN @import + font-family rules; HOME for the size scale.
+   * ================================================================ */
+  --nox-font-display: "Bricolage Grotesque", "Inter", system-ui, -apple-system,
+                      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nox-font-body:    "Bricolage Grotesque", "Inter", system-ui, -apple-system,
+                      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nox-font-mono:    "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --nox-weight-regular: 400;                      /* MAIN weight scan                    */
+  --nox-weight-medium:  500;
+  --nox-weight-semi:    600;                      /* dominant weight upstream (28 uses)  */
+  --nox-weight-bold:    700;
+
+  --nox-size-section:   1.7rem;                   /* HOME .HomeListAll h1  (27.2px live) */
+  --nox-size-dialog:    1.15rem;                  /* MAIN modal h3                       */
+  --nox-size-nav:       1.3rem;                   /* MAIN .navbar                        */
+  --nox-size-body:      1rem;
+  --nox-size-meta:      1rem;                     /* HOME .HomeHeroMetaRow2              */
+  --nox-size-small:     .9rem;
+  --nox-size-tiny:      .75rem;
+
+  --nox-leading-tight:  1.2rem;                   /* HOME card title                     */
+  --nox-leading-base:   1.5;                      /* dominant line-height upstream       */
+  --nox-tracking-tight: -.01em;                   /* MAIN modal heading                  */
+
+  /* ================================================================ *
+   * 4. RADII
+   * Source: MAIN + HOME radius rules; px values confirmed live.
+   * ================================================================ */
+  --nox-radius-focus:  .2rem;                     /* MAIN navbar a:focus-visible  */
+  --nox-radius-xs:     .3rem;                     /* MAIN .btn, HOME watchProgress */
+  --nox-radius-sm:     .4rem;                     /* MAIN .closeBtn, badges        */
+  --nox-radius-pill:   .5rem;                     /* MAIN .navbar  (8px live)      */
+  --nox-radius-card:   .5rem;                     /* HOME .MovieCardSmall .img     */
+  --nox-radius-lg:     .75rem;                    /* MAIN auth card                */
+  --nox-radius-dialog: 1rem;                      /* MAIN .modalCard               */
+  --nox-radius-round:  2rem;                      /* HOME .HomeCarousel (32px)     */
+  --nox-radius-full:   999px;
+
+  /* ================================================================ *
+   * 5. SHADOWS
+   * Source: MAIN + HOME shadow rules.
+   * ================================================================ */
+  --nox-shadow-card:       0 1px 3px rgba(0,0,0,.35);                             /* Nox-authored rest state */
+  --nox-shadow-card-hover: 0 1px 2px var(--nox-text-secondary);                   /* HOME .MovieCardSmall:hover img */
+  --nox-shadow-dialog:     0 24px 48px rgba(0,0,0,.6);                            /* MAIN .modalCard */
+  --nox-shadow-popover:    0 10px 30px -5px rgba(0,0,0,.4), 0 0 1px hsla(0,0%,100%,.1); /* MAIN popover */
+  --nox-shadow-focus:      0 0 0 2px rgba(var(--nox-accent-rgb), .25);            /* MAIN :focus-visible */
+  --nox-shadow-glow:       0 0 10px var(--nox-accent), 0 0 5px var(--nox-accent); /* MAIN active indicator */
+
+  /* ================================================================ *
+   * 6. SPACING
+   * Source: MAIN gutter + HOME .HomeListSection; scale normalised.
+   * ================================================================ */
+  --nox-space-1: .25rem;
+  --nox-space-2: .5rem;                           /* MAIN .navbar left offset        */
+  --nox-space-3: .75rem;
+  --nox-space-4: 1rem;                            /* HOME .HomeListSection gap       */
+  --nox-space-5: 1.5rem;                          /* MAIN .HomeHeroMeta radius scale */
+  --nox-space-6: 2rem;                            /* MAIN .authPage padding          */
+  --nox-space-7: 2.5rem;                          /* HOME .HomeHeroMeta offset       */
+  --nox-space-8: 4rem;                            /* MAIN .authPage padding          */
+  --nox-gutter:  5rem;                            /* MAIN settings/content padding   */
+
+  /* ================================================================ *
+   * 7. MOTION
+   * Source: MAIN + HOME transition scan.
+   * ================================================================ */
+  --nox-dur-fastest: .1s;                         /* HOME card image                 */
+  --nox-dur-fast:    .15s;                        /* MAIN (7 uses)                   */
+  --nox-dur-base:    .2s;                         /* MAIN (13 uses, dominant)        */
+  --nox-dur-slow:    .3s;                         /* MAIN opacity/visibility         */
+  --nox-ease:        ease;
+  --nox-ease-material: cubic-bezier(.4,0,.2,1);   /* MAIN                            */
+  --nox-ease-in-out: ease-in-out;                 /* HOME card image                 */
+
+  /* ================================================================ *
+   * 8. LAYOUT METRICS
+   * Source: HOME hero/carousel/card; MAIN navbar.
+   * ================================================================ */
+  --nox-hero-height:        90dvh;                /* HOME .HomeHero                  */
+  --nox-carousel-height:    80dvh;                /* HOME .HomeCarousel              */
+  --nox-carousel-max-width: calc(100vw - var(--nox-gutter)); /* HOME .HomeCarousel  */
+  --nox-carousel-radius:    2rem;                 /* HOME .HomeCarousel              */
+  --nox-card-width:         10rem;                /* HOME .MovieCardSmall (160px)    */
+  --nox-card-height:        15rem;                /* HOME .MovieCardSmall .img (240px) */
+  --nox-progress-height:    .3rem;                /* HOME .watchProgress             */
+  --nox-header-height:      3.5rem;               /* Nox-authored, replaces rail footprint */
+  --nox-blur:               12px;                 /* MAIN dominant backdrop blur     */
+  --nox-blur-sm:            8px;
+
+  /* ================================================================ *
+   * 9. JELLYFIN BRIDGE
+   * Jellyfin Web exposes MUI-derived --jf-palette-* custom properties.
+   * Overriding them here retints the whole client from one place. If a
+   * future Jellyfin release renames these, only this block breaks —
+   * see the BRITTLE section of nox.css.
+   * ================================================================ */
+  --jf-palette-background-default:        var(--nox-bg);
+  --jf-palette-background-paper:          var(--nox-surface);
+  --jf-palette-background-defaultChannel: 27 25 25;
+  --jf-palette-primary-main:              var(--nox-accent);
+  --jf-palette-primary-dark:              var(--nox-accent-active);
+  --jf-palette-primary-light:             var(--nox-accent-hover);
+  --jf-palette-primary-contrastText:      var(--nox-accent-contrast);
+  --jf-palette-secondary-main:            var(--nox-text-secondary);
+  --jf-palette-secondary-contrastText:    var(--nox-surface);
+  --jf-palette-error-main:                var(--nox-danger);
+  --jf-palette-warning-main:              var(--nox-star);
+  --jf-palette-info-main:                 var(--nox-muted);
+  --jf-palette-success-main:              #4caf50;
+  --jf-palette-text-primary:              var(--nox-text);
+  --jf-palette-text-secondary:            var(--nox-text-secondary);
+  --jf-palette-text-disabled:             color-mix(in srgb, var(--nox-muted) 70%, transparent);
+  --jf-palette-divider:                   var(--nox-border);
+  --jf-palette-action-active:             var(--nox-text-secondary);
+  --jf-palette-action-hover:              color-mix(in srgb, var(--nox-muted) 15%, transparent);
+  --jf-palette-action-selected:           color-mix(in srgb, var(--nox-muted) 22%, transparent);
+  --jf-palette-grey-800:                  var(--nox-surface);
+  --jf-palette-grey-900:                  var(--nox-bg);
+
+  --jf-card-borderRadius: var(--nox-radius-card);
+  --jf-blur-overlay:      var(--nox-blur);
+}
+
+/* ================================================================== *
+ * 10. ALTERNATE PALETTES
+ * All fifteen shipped upstream, sampled verbatim. Apply by adding the
+ * class to <html>, e.g. <html class="dark nox-midnight">, or by copying
+ * the values into the :root block above.
+ * Source for every block below: MAIN.
+ * ================================================================== */
+
+.nox-light {              /* MAIN .light,:root.light */
+  --nox-bg: #f4f7fe;
+  --nox-bg-gradient: hsla(0,8%,93%,.8);
+  --nox-surface: #fff;
+  --nox-muted: #64748b;
+  --nox-text-secondary: #52525b;
+  --nox-text: #000;
+  --nox-accent-contrast: #fff;
+  --nox-banner-saturation: 45%;
+  --nox-banner-lightness-1: 85%;
+  --nox-banner-lightness-2: 78%;
+}
+
+.nox-charcoal {           /* MAIN .charcoal */
+  --nox-bg: #2d2d2d;
+  --nox-bg-gradient: rgba(75,75,75,.8);
+  --nox-surface: #1e1e1e;
+  --nox-muted: #787878;
+  --nox-text-secondary: #c8c8c8;
+  --nox-text: #fff;
+  --nox-banner-saturation: 30%;
+  --nox-banner-lightness-1: 14%;
+  --nox-banner-lightness-2: 10%;
+}
+
+.nox-evergreen {          /* MAIN .evergreen */
+  --nox-bg: #1b3022;
+  --nox-bg-gradient: rgba(40,80,60,.8);
+  --nox-surface: #0f1e13;
+  --nox-muted: #4c7a5d;
+  --nox-text-secondary: #88b394;
+  --nox-text: #fff;
+  --nox-banner-saturation: 30%;
+  --nox-banner-lightness-1: 14%;
+  --nox-banner-lightness-2: 10%;
+}
+
+.nox-midnight {           /* MAIN .midnight */
+  --nox-bg: #121826;
+  --nox-bg-gradient: rgba(20,25,40,.8);
+  --nox-surface: #0a0f1f;
+  --nox-muted: #374151;
+  --nox-text-secondary: #9ca3af;
+  --nox-text: #fff;
+  --nox-banner-saturation: 30%;
+  --nox-banner-lightness-1: 14%;
+  --nox-banner-lightness-2: 10%;
+}
+
+.nox-oyster {             /* MAIN .oyster */
+  --nox-bg: #eae6df;
+  --nox-bg-gradient: hsla(40,43%,93%,.8);
+  --nox-surface: #fdfaf4;
+  --nox-muted: #c8b7a6;
+  --nox-text-secondary: #8d7962;
+  --nox-text: #000;
+  --nox-accent-contrast: #fff;
+  --nox-banner-saturation: 45%;
+  --nox-banner-lightness-1: 85%;
+  --nox-banner-lightness-2: 78%;
+}
+
+.nox-aurora {             /* MAIN .aurora */
+  --nox-bg: #1b1f2b;
+  --nox-bg-gradient: rgba(30,40,60,.8);
+  --nox-surface: #101520;
+  --nox-muted: #3b6978;
+  --nox-text-secondary: #81a1c1;
+  --nox-text: #fff;
+  --nox-banner-saturation: 30%;
+  --nox-banner-lightness-1: 14%;
+  --nox-banner-lightness-2: 10%;
+}
+
+.nox-obsidian-luxury {    /* MAIN .obsidian-luxury */
+  --nox-bg: #0d0d0d;
+  --nox-bg-gradient: hsla(0,0%,5%,.9);
+  --nox-surface: #1c1c1c;
+  --nox-muted: #5c5c5c;
+  --nox-text-secondary: #9c8500;
+  --nox-text: #f5f5f5;
+  --nox-banner-saturation: 25%;
+  --nox-banner-lightness-1: 10%;
+  --nox-banner-lightness-2: 6%;
+}
+
+.nox-arctic-dawn {        /* MAIN .arctic-dawn */
+  --nox-bg: #f0f4f8;
+  --nox-bg-gradient: rgba(240,244,248,.9);
+  --nox-surface: #fff;
+  --nox-muted: #97adbc;
+  --nox-text-secondary: #4e768a;
+  --nox-text: #011f4b;
+  --nox-accent-contrast: #fff;
+  --nox-banner-saturation: 45%;
+  --nox-banner-lightness-1: 85%;
+  --nox-banner-lightness-2: 78%;
+}
+
+.nox-nordic-frost {       /* MAIN .nordic-frost */
+  --nox-bg: #1e222a;
+  --nox-bg-gradient: rgba(40,44,52,.8);
+  --nox-surface: #282c34;
+  --nox-muted: #5c6370;
+  --nox-text-secondary: #61afef;
+  --nox-text: #abb2bf;
+  --nox-banner-saturation: 25%;
+  --nox-banner-lightness-1: 15%;
+  --nox-banner-lightness-2: 11%;
+}
+
+.nox-slate-corporate {    /* MAIN .slate-corporate */
+  --nox-bg: #0f172a;
+  --nox-bg-gradient: rgba(30,41,59,.8);
+  --nox-surface: #1e293b;
+  --nox-muted: #64748b;
+  --nox-text-secondary: #0ea5e9;
+  --nox-text: #f8fafc;
+  --nox-banner-saturation: 20%;
+  --nox-banner-lightness-1: 12%;
+  --nox-banner-lightness-2: 8%;
+}
+
+.nox-royal-amethyst {     /* MAIN .royal-amethyst */
+  --nox-bg: #090514;
+  --nox-bg-gradient: rgba(26,17,43,.8);
+  --nox-surface: #1a112b;
+  --nox-muted: #7c5dfa;
+  --nox-text-secondary: #a5b4fc;
+  --nox-text: #f3f4f6;
+  --nox-banner-saturation: 35%;
+  --nox-banner-lightness-1: 12%;
+  --nox-banner-lightness-2: 8%;
+}
+
+.nox-warm-terracotta {    /* MAIN .warm-terracotta */
+  --nox-bg: #1c1613;
+  --nox-bg-gradient: rgba(46,35,31,.8);
+  --nox-surface: #2e231f;
+  --nox-muted: #d97706;
+  --nox-text-secondary: #fcd34d;
+  --nox-text: #fafaf9;
+  --nox-banner-saturation: 20%;
+  --nox-banner-lightness-1: 13%;
+  --nox-banner-lightness-2: 9%;
+}
+
+.nox-monochrome-pro {     /* MAIN .monochrome-pro */
+  --nox-bg: #121212;
+  --nox-bg-gradient: rgba(30,30,30,.8);
+  --nox-surface: #1e1e1e;
+  --nox-muted: #757575;
+  --nox-text-secondary: #e0e0e0;
+  --nox-text: #fff;
+  --nox-banner-saturation: 0%;
+  --nox-banner-lightness-1: 10%;
+  --nox-banner-lightness-2: 5%;
+}
+
+.nox-enterprise-light {   /* MAIN .enterprise-light */
+  --nox-bg: #f8fafc;
+  --nox-bg-gradient: rgba(241,245,249,.8);
+  --nox-surface: #fff;
+  --nox-muted: #64748b;
+  --nox-text-secondary: #2563eb;
+  --nox-text: #0f172a;
+  --nox-accent-contrast: #fff;
+  --nox-banner-saturation: 35%;
+  --nox-banner-lightness-1: 90%;
+  --nox-banner-lightness-2: 85%;
+}

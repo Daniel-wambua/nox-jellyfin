@@ -1,0 +1,537 @@
+{
+  "name": "Nox",
+  "version": "0.1.0",
+  "description": "Single source of truth for the Nox Jellyfin theme. Every value below was sampled from the reference site's own CSS or read from its live computed styles; none are estimates.",
+  "reference": {
+    "site": "https://rivestream.ru/",
+    "product_name": "Rive",
+    "framework": "Next.js (pages router) + TypeScript, CSS Modules",
+    "build_id": "xL74XyOxFopGT7AtGqAve",
+    "sampled_at": "2026-11-04",
+    "stylesheets": {
+      "main": {
+        "path": "/_next/static/css/991debb0c798841b.css",
+        "bytes": 116329,
+        "contains": ["theme token blocks", "Google Fonts @import", "navbar", "modals", "buttons", "settings"]
+      },
+      "home": {
+        "path": "/_next/static/css/d517b9ea2542bdaa.css",
+        "bytes": 9697,
+        "contains": ["HomeHero", "HomeCarousel", "HomeListAll", "MovieCardSmall", "HomeHeroMeta", "watchProgress"]
+      }
+    },
+    "runtime": "/_next/static/chunks/pages/_app-cf578bf66198fbfa.js",
+    "live_verification": {
+      "method": "Chrome DevTools Protocol Runtime.evaluate against the live page, emulating prefers-color-scheme: dark",
+      "resolved_theme_class": "dark",
+      "viewport": "1920x937"
+    }
+  },
+
+  "accent": {
+    "token": "--ascent-color",
+    "applied_by": "document.documentElement.style.setProperty('--ascent-color', value) - pages/_app-cf578bf66198fbfa.js",
+    "css_root_default": { "value": "gold", "source": "991debb0c798841b.css . :root" },
+    "light_root_default": { "value": "blue", "source": "991debb0c798841b.css . :root (second block)" },
+    "live_dark_session": { "value": "#2196f3", "source": "live computed style, dark emulation" },
+    "focus_ring": {
+      "value": "0 0 0 2px rgba(var(--ascent-color-rgb,120,120,120),.25)",
+      "source": "991debb0c798841b.css . :focus-visible rules"
+    },
+    "picker_options": [
+      { "value": "gold", "label": "Gold" },
+      { "value": "#f44336", "label": "Red" },
+      { "value": "#e91e63", "label": "Pink" },
+      { "value": "#9c27b0", "label": "Purple" },
+      { "value": "#673ab7", "label": "Deep Purple" },
+      { "value": "#3f51b5", "label": "Indigo" },
+      { "value": "#2196f3", "label": "Blue" },
+      { "value": "#03a9f4", "label": "Light Blue" },
+      { "value": "#00bcd4", "label": "Cyan" },
+      { "value": "#009688", "label": "Teal" },
+      { "value": "#4caf50", "label": "Green" },
+      { "value": "#8bc34a", "label": "Light Green" },
+      { "value": "#ffeb3b", "label": "Yellow" },
+      { "value": "#ffc107", "label": "Amber" },
+      { "value": "#ff9800", "label": "Orange" },
+      { "value": "#ff5722", "label": "Deep Orange" },
+      { "value": "#795548", "label": "Brown" },
+      { "value": "#212121", "label": "Dark" }
+    ],
+    "picker_source": "pages/_app-cf578bf66198fbfa.js - <select name=\"ascent\"> option list",
+    "note": "The accent is a runtime user preference, NOT a fixed brand colour. The CSS root default is 'gold'; the light-mode root default is 'blue'; the live session resolved to '#2196f3'. The premise that the accent is red is not supported by any sampled default. Nox deliberately defaults to the picker's Red (#f44336) to match the requested brand direction; changing one token re-skins the whole theme."
+  },
+
+  "themes": {
+    "dark": {
+      "selector": ".dark,:root.dark",
+      "source": "991debb0c798841b.css",
+      "live_verified": true,
+      "tokens": {
+        "bg-color": "#1b1919",
+        "bg-gradient": "rgba(49,47,47,.8)",
+        "primary-1": "#000",
+        "primary-2": "#576b87",
+        "primary-3": "#a4b3c9",
+        "primary-4": "#fff",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "30%",
+        "banner-lightness-1": "14%",
+        "banner-lightness-2": "10%"
+      }
+    },
+    "light": {
+      "selector": ".light,:root.light",
+      "source": "991debb0c798841b.css",
+      "live_verified": true,
+      "tokens": {
+        "bg-color": "#f4f7fe",
+        "bg-gradient": "hsla(0,8%,93%,.8)",
+        "primary-1": "#fff",
+        "primary-2": "#64748b",
+        "primary-3": "#52525b",
+        "primary-4": "#000",
+        "watchPageBtn": "var(--primary-1)",
+        "callToActionBtn": "var(--primary-3)",
+        "banner-saturation": "45%",
+        "banner-lightness-1": "85%",
+        "banner-lightness-2": "78%"
+      }
+    },
+    "charcoal": {
+      "selector": ".charcoal,:root.charcoal",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#2d2d2d",
+        "bg-gradient": "rgba(75,75,75,.8)",
+        "primary-1": "#1e1e1e",
+        "primary-2": "#787878",
+        "primary-3": "#c8c8c8",
+        "primary-4": "#fff",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-2)",
+        "banner-saturation": "30%",
+        "banner-lightness-1": "14%",
+        "banner-lightness-2": "10%"
+      }
+    },
+    "evergreen": {
+      "selector": ".evergreen,:root.evergreen",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#1b3022",
+        "bg-gradient": "rgba(40,80,60,.8)",
+        "primary-1": "#0f1e13",
+        "primary-2": "#4c7a5d",
+        "primary-3": "#88b394",
+        "primary-4": "#fff",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-2)",
+        "banner-saturation": "30%",
+        "banner-lightness-1": "14%",
+        "banner-lightness-2": "10%"
+      }
+    },
+    "midnight": {
+      "selector": ".midnight,:root.midnight",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#121826",
+        "bg-gradient": "rgba(20,25,40,.8)",
+        "primary-1": "#0a0f1f",
+        "primary-2": "#374151",
+        "primary-3": "#9ca3af",
+        "primary-4": "#fff",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-2)",
+        "banner-saturation": "30%",
+        "banner-lightness-1": "14%",
+        "banner-lightness-2": "10%"
+      }
+    },
+    "oyster": {
+      "selector": ".oyster,:root.oyster",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#eae6df",
+        "bg-gradient": "hsla(40,43%,93%,.8)",
+        "primary-1": "#fdfaf4",
+        "primary-2": "#c8b7a6",
+        "primary-3": "#8d7962",
+        "primary-4": "#000",
+        "watchPageBtn": "var(--primary-1)",
+        "callToActionBtn": "var(--primary-3)",
+        "banner-saturation": "45%",
+        "banner-lightness-1": "85%",
+        "banner-lightness-2": "78%"
+      }
+    },
+    "aurora": {
+      "selector": ".aurora,:root.aurora",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#1b1f2b",
+        "bg-gradient": "rgba(30,40,60,.8)",
+        "primary-1": "#101520",
+        "primary-2": "#3b6978",
+        "primary-3": "#81a1c1",
+        "primary-4": "#fff",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-2)",
+        "banner-saturation": "30%",
+        "banner-lightness-1": "14%",
+        "banner-lightness-2": "10%"
+      }
+    },
+    "obsidian-luxury": {
+      "selector": ".obsidian-luxury,:root.obsidian-luxury",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#0d0d0d",
+        "bg-gradient": "hsla(0,0%,5%,.9)",
+        "primary-1": "#1c1c1c",
+        "primary-2": "#5c5c5c",
+        "primary-3": "#9c8500",
+        "primary-4": "#f5f5f5",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "25%",
+        "banner-lightness-1": "10%",
+        "banner-lightness-2": "6%"
+      }
+    },
+    "arctic-dawn": {
+      "selector": ".arctic-dawn,:root.arctic-dawn",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#f0f4f8",
+        "bg-gradient": "rgba(240,244,248,.9)",
+        "primary-1": "#fff",
+        "primary-2": "#97adbc",
+        "primary-3": "#4e768a",
+        "primary-4": "#011f4b",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-4)",
+        "banner-saturation": "45%",
+        "banner-lightness-1": "85%",
+        "banner-lightness-2": "78%"
+      }
+    },
+    "nordic-frost": {
+      "selector": ".nordic-frost,:root.nordic-frost",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#1e222a",
+        "bg-gradient": "rgba(40,44,52,.8)",
+        "primary-1": "#282c34",
+        "primary-2": "#5c6370",
+        "primary-3": "#61afef",
+        "primary-4": "#abb2bf",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "25%",
+        "banner-lightness-1": "15%",
+        "banner-lightness-2": "11%"
+      }
+    },
+    "slate-corporate": {
+      "selector": ".slate-corporate,:root.slate-corporate",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#0f172a",
+        "bg-gradient": "rgba(30,41,59,.8)",
+        "primary-1": "#1e293b",
+        "primary-2": "#64748b",
+        "primary-3": "#0ea5e9",
+        "primary-4": "#f8fafc",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "20%",
+        "banner-lightness-1": "12%",
+        "banner-lightness-2": "8%"
+      }
+    },
+    "royal-amethyst": {
+      "selector": ".royal-amethyst,:root.royal-amethyst",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#090514",
+        "bg-gradient": "rgba(26,17,43,.8)",
+        "primary-1": "#1a112b",
+        "primary-2": "#7c5dfa",
+        "primary-3": "#a5b4fc",
+        "primary-4": "#f3f4f6",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "35%",
+        "banner-lightness-1": "12%",
+        "banner-lightness-2": "8%"
+      }
+    },
+    "warm-terracotta": {
+      "selector": ".warm-terracotta,:root.warm-terracotta",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#1c1613",
+        "bg-gradient": "rgba(46,35,31,.8)",
+        "primary-1": "#2e231f",
+        "primary-2": "#d97706",
+        "primary-3": "#fcd34d",
+        "primary-4": "#fafaf9",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "20%",
+        "banner-lightness-1": "13%",
+        "banner-lightness-2": "9%"
+      }
+    },
+    "monochrome-pro": {
+      "selector": ".monochrome-pro,:root.monochrome-pro",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#121212",
+        "bg-gradient": "rgba(30,30,30,.8)",
+        "primary-1": "#1e1e1e",
+        "primary-2": "#757575",
+        "primary-3": "#e0e0e0",
+        "primary-4": "#fff",
+        "watchPageBtn": "var(--primary-3)",
+        "callToActionBtn": "var(--primary-1)",
+        "banner-saturation": "0%",
+        "banner-lightness-1": "10%",
+        "banner-lightness-2": "5%"
+      }
+    },
+    "enterprise-light": {
+      "selector": ".enterprise-light,:root.enterprise-light",
+      "source": "991debb0c798841b.css",
+      "tokens": {
+        "bg-color": "#f8fafc",
+        "bg-gradient": "rgba(241,245,249,.8)",
+        "primary-1": "#fff",
+        "primary-2": "#64748b",
+        "primary-3": "#2563eb",
+        "primary-4": "#0f172a",
+        "watchPageBtn": "var(--primary-1)",
+        "callToActionBtn": "var(--primary-3)",
+        "banner-saturation": "35%",
+        "banner-lightness-1": "90%",
+        "banner-lightness-2": "85%"
+      }
+    }
+  },
+
+  "semantic": {
+    "role_map": {
+      "note": "The reference exposes four generic slots. This is how Nox interprets them.",
+      "primary-1": "surface - card backs, navbar panel, modal body",
+      "primary-2": "muted text, borders, progress track, dividers",
+      "primary-3": "secondary text, section titles, hovered card titles",
+      "primary-4": "primary text, modal headings, active icons"
+    },
+    "danger_notification": {
+      "value": "#ef4444",
+      "source": "991debb0c798841b.css . notification/dot/badge rules"
+    },
+    "danger_destructive": {
+      "value": "#e74c3c",
+      "source": "991debb0c798841b.css . destructive/danger button rules"
+    },
+    "danger_destructive_hover": {
+      "value": "#c0392b",
+      "source": "991debb0c798841b.css . destructive button :hover"
+    },
+    "favorite_star": {
+      "value": "#f59e0b",
+      "source": "d517b9ea2542bdaa.css . favorite button :hover / .isFavorite"
+    }
+  },
+
+  "typography": {
+    "import": {
+      "value": "https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100..700&family=Abel&family=Montserrat:wght@100..900&family=Ubuntu:wght@300;500;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:opsz,wght@14..32,100..900&display=swap",
+      "source": "991debb0c798841b.css . @import (first statement)"
+    },
+    "families_imported": ["Roboto Mono", "Abel", "Montserrat", "Ubuntu", "Open Sans", "Bricolage Grotesque", "Inter"],
+    "stacks": [
+      { "value": "var(--SysFFamily),\"Bricolage Grotesque\",serif!important", "source": "991debb0c798841b.css . system font-family rule" },
+      { "value": "var(--SFFamily),\"Roboto Mono\",serif!important", "source": "991debb0c798841b.css . subtitle/player font-family rule" },
+      { "value": "var(--SysFFamily),sans-serif", "source": "991debb0c798841b.css . fallback stack" }
+    ],
+    "live_resolved": {
+      "value": "\"Bricolage Grotesque\", serif",
+      "source": "live computed style (body and section titles)"
+    },
+    "runtime_vars": {
+      "value": "--SysFFamily / --SFFamily / --SFSize / --SFColor set inline by JS",
+      "source": "pages/_app-cf578bf66198fbfa.js . setProperty block"
+    },
+    "sizes": {
+      "section_title": {
+        "value": "1.7rem",
+        "computed": "27.2px",
+        "source": "d517b9ea2542bdaa.css . HomeListAll heading",
+        "live_verified": true
+      },
+      "modal_heading": { "value": "1.15rem", "source": "991debb0c798841b.css . modal header h3" },
+      "navbar": { "value": "1.3rem", "source": "991debb0c798841b.css . navbar" },
+      "hero_meta_row": { "value": "1rem", "source": "d517b9ea2542bdaa.css . HomeHeroMeta row" },
+      "card_title": { "value": "inherit (line-height 1.2rem)", "source": "d517b9ea2542bdaa.css . MovieCardSmall p" },
+      "scale_observed": [".7rem", ".72rem", ".75rem", ".8rem", ".85rem", ".88rem", ".9rem", ".95rem", "1rem", "1.1rem", "1.15rem", "1.2rem", "1.25rem", "1.3rem", "1.4rem", "1.5rem", "1.7rem", "2.2rem", "2.5rem"]
+    },
+    "weights": {
+      "observed": { "400": 4, "500": 18, "600": 28, "700": 7, "800": 2, "900": 1 },
+      "dominant": "600",
+      "source": "frequency scan across both stylesheets"
+    },
+    "line_heights": {
+      "observed": ["1", "1.2rem", "1.4", "1.5", "1.5rem", "1.55", "1.6"],
+      "dominant": "1.5"
+    },
+    "treatments": {
+      "section_title": "font-family sans-serif fallback; color var(--primary-3); font-size 1.7rem; display flex; gap .3rem",
+      "modal_heading": "color var(--primary-4); font-weight 600; letter-spacing -.01em",
+      "card_title": "color var(--primary-2); -webkit-line-clamp 2; line-height 1.2rem; hover color var(--primary-3)"
+    }
+  },
+
+  "radii": {
+    "focus": { "value": ".2rem", "source": "991debb0c798841b.css . navbar a:focus-visible" },
+    "button_small": { "value": ".3rem", "source": "991debb0c798841b.css . .btn / .tooltip-btn / .favoriteBtn" },
+    "progress": { "value": ".3rem", "source": "d517b9ea2542bdaa.css . watchProgress" },
+    "icon_button": { "value": ".4rem", "source": "991debb0c798841b.css . .closeBtn" },
+    "badge": { "value": ".4rem", "source": "991debb0c798841b.css . .bookmarkDetailBtn" },
+    "card": { "value": ".5rem", "source": "d517b9ea2542bdaa.css . MovieCardSmall .img" },
+    "navbar": { "value": ".5rem", "source": "991debb0c798841b.css . .navbar / .navbar_wrapper" },
+    "button": { "value": ".5rem", "source": "991debb0c798841b.css . .modalFooter button" },
+    "button_action": { "value": ".45rem", "source": "991debb0c798841b.css . .sourceActions button" },
+    "card_large": { "value": ".75rem", "source": "991debb0c798841b.css . settings auth card / download button" },
+    "dialog": { "value": "1rem", "source": "991debb0c798841b.css . .modalCard" },
+    "dialog_alt": { "value": "1.1rem", "source": "991debb0c798841b.css . .modalCard (second variant)" },
+    "hero_meta": { "value": "1.5rem", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta" },
+    "hero": { "value": "2rem", "source": "d517b9ea2542bdaa.css . .HomeCarousel" },
+    "pill": { "value": "2rem", "source": "991debb0c798841b.css . settings status pill" },
+    "round": { "value": "50%", "source": "991debb0c798841b.css . notification/close dots" },
+    "live_verified": { "card": "8px", "navbar": "8px", "hero": "32px", "hero_meta": "24px" }
+  },
+
+  "shadows": {
+    "card_hover": { "value": "0 1px 2px var(--primary-3)", "source": "d517b9ea2542bdaa.css . MovieCardSmall:hover img" },
+    "dialog": { "value": "0 24px 48px rgba(0,0,0,.6)", "source": "991debb0c798841b.css . .modalCard" },
+    "dialog_alt": { "value": "0 24px 50px rgba(0,0,0,.65)", "source": "991debb0c798841b.css . .modalCard (second variant)" },
+    "popover": { "value": "0 10px 30px -5px rgba(0,0,0,.4),0 0 1px hsla(0,0%,100%,.1)", "source": "991debb0c798841b.css . settings popover card" },
+    "focus_ring": { "value": "0 0 0 2px rgba(var(--ascent-color-rgb,120,120,120),.25)", "source": "991debb0c798841b.css . :focus-visible" },
+    "accent_glow": { "value": "0 0 10px var(--ascent-color),0 0 5px var(--ascent-color)", "source": "991debb0c798841b.css . active indicator" },
+    "notch": { "value": "70px 70px 0 70px var(--bg-color) / -70px -70px 0 70px / 70px -70px / -5px 5px", "source": "d517b9ea2542bdaa.css . curvy corner rules" }
+  },
+
+  "motion": {
+    "durations": {
+      "fastest": { "value": ".1s", "source": "d517b9ea2542bdaa.css . MovieCardSmall img (all .1s ease-in-out)" },
+      "fast": { "value": ".15s", "source": "991debb0c798841b.css . 7 occurrences of 'all .15s ease'" },
+      "base": { "value": ".2s", "source": "991debb0c798841b.css . 13 occurrences of 'all .2s ease' (dominant)" },
+      "slow": { "value": ".3s", "source": "991debb0c798841b.css . opacity/visibility .3s ease-in-out" }
+    },
+    "easings": {
+      "default": { "value": "ease", "source": "dominant across both stylesheets" },
+      "material": { "value": "cubic-bezier(.4,0,.2,1)", "source": "991debb0c798841b.css . 4 occurrences" },
+      "in_out": { "value": "ease-in-out", "source": "d517b9ea2542bdaa.css . card image" }
+    },
+    "hover_behaviours": {
+      "card_image": "box-shadow:0 1px 2px var(--primary-3); no transform",
+      "card_title": "color:var(--primary-3)",
+      "primary_button": "filter:brightness(1.1); transform:translateY(-1px)",
+      "secondary_button": "background color-mix(primary-2 15%); color var(--primary-4)",
+      "nav_item_arrow": "transform:translateX(3px); opacity .8; color var(--ascent-color)"
+    },
+    "reduced_motion": { "value": "@media (prefers-reduced-motion) present", "source": "991debb0c798841b.css" },
+    "background_animations": { "value": "drift / flash / move1..move10 / nprogress-spinner / skeleton-loading", "source": "991debb0c798841b.css . @keyframes" }
+  },
+
+  "layout": {
+    "gutter": { "value": "5rem", "source": "991debb0c798841b.css . settings page padding-left" },
+    "hero": {
+      "height": { "value": "90dvh", "source": "d517b9ea2542bdaa.css . .HomeHero" },
+      "carousel_height": { "value": "80dvh", "source": "d517b9ea2542bdaa.css . .HomeCarousel" },
+      "carousel_max_width": { "value": "calc(100vw - 5rem)", "source": "d517b9ea2542bdaa.css . .HomeCarousel", "live_verified": "1840px @1920" },
+      "carousel_margin": { "value": "1rem 0 0", "source": "d517b9ea2542bdaa.css . .HomeCarousel" },
+      "carousel_radius": { "value": "2rem", "source": "d517b9ea2542bdaa.css . .HomeCarousel", "live_verified": "32px" },
+      "loading_height": { "value": "calc(80dvh - 1rem)", "source": "d517b9ea2542bdaa.css . .CarouselLoading" },
+      "curvy_size": { "value": "2.2rem", "source": "d517b9ea2542bdaa.css . .curvy" },
+      "meta_bottom": { "value": "margin-bottom:-2.5rem", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta" },
+      "meta_radius": { "value": "1.5rem", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta", "live_verified": "24px" },
+      "meta_outline": { "value": ".7rem solid var(--bg-color), outline-offset:-1px", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta" },
+      "meta_width": { "value": "20rem", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta", "live_verified": "320px" },
+      "meta_gap": { "value": "1rem", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta" },
+      "meta_row_gap": { "value": ".7rem", "source": "d517b9ea2542bdaa.css . .HomeHeroMetaRow2" },
+      "title_clamp": { "value": "-webkit-line-clamp:1", "source": "d517b9ea2542bdaa.css . .HomeHeroMeta h1" }
+    },
+    "navbar": {
+      "wrapper_position": { "value": "position:fixed; left:.5rem; padding:1px; background:transparent; z-index:10", "source": "991debb0c798841b.css . .navbar_wrapper" },
+      "rail_layout": { "value": "display:flex; flex-direction:column; align-items:center; gap:1rem; padding:1rem", "source": "991debb0c798841b.css . .navbar" },
+      "panel_bg": { "value": "var(--primary-1)", "source": "991debb0c798841b.css . .navbar", "live_verified": "rgb(0,0,0)" },
+      "icon_size": { "value": "1.3rem", "source": "991debb0c798841b.css . .navbar" },
+      "nav_groups": { "value": "grid; grid-template-columns:repeat(2,1fr); gap:1.5rem 1rem", "source": "991debb0c798841b.css . .navGroups" },
+      "mobile_breakpoints": { "value": ".mobileHide display:none below 770px; .mobileShow opposite", "source": "991debb0c798841b.css . media queries" }
+    },
+    "carousel_row": {
+      "display": { "value": "flex", "source": "d517b9ea2542bdaa.css . .HomeListSection" },
+      "gap": { "value": "1rem", "source": "d517b9ea2542bdaa.css . .HomeListSection" },
+      "overflow": { "value": "auto", "source": "d517b9ea2542bdaa.css . .HomeListSection" },
+      "padding": { "value": ".7rem", "source": "d517b9ea2542bdaa.css . .HomeListSection" },
+      "margin": { "value": ".3rem .5rem 1.3rem", "source": "d517b9ea2542bdaa.css . .HomeListSection" },
+      "scroll_snap": { "value": "none", "source": "scan of both stylesheets - no scroll-snap declarations exist" },
+      "arrows": { "value": "none on home rows", "source": "scan - arrows only exist in the settings list" }
+    },
+    "card": {
+      "width": { "value": "10rem", "source": "d517b9ea2542bdaa.css . .MovieCardSmall", "live_verified": "160px" },
+      "height": { "value": "15rem", "source": "d517b9ea2542bdaa.css . .MovieCardSmall .img", "live_verified": "240px" },
+      "min_height": { "value": "15rem", "source": "d517b9ea2542bdaa.css . .MovieCardSmall" },
+      "radius": { "value": ".5rem", "source": "d517b9ea2542bdaa.css . .img", "live_verified": "8px" },
+      "image_fit": { "value": "cover", "source": "d517b9ea2542bdaa.css . .img" },
+      "title_margin": { "value": "margin-bottom:.3rem", "source": "d517b9ea2542bdaa.css . .img" },
+      "title_clamp": { "value": "-webkit-line-clamp:2", "source": "d517b9ea2542bdaa.css . .MovieCardSmall p" }
+    },
+    "progress": {
+      "height": { "value": ".3rem", "source": "d517b9ea2542bdaa.css . .watchProgress" },
+      "radius": { "value": ".3rem", "source": "d517b9ea2542bdaa.css . .watchProgress" },
+      "track": { "value": "var(--primary-2)", "source": "d517b9ea2542bdaa.css . .watchProgress" },
+      "position": { "value": "absolute; left:0", "source": "d517b9ea2542bdaa.css . .watchProgress" }
+    }
+  },
+
+  "surfaces": {
+    "modal_overlay": { "value": "rgba(0,0,0,.7); backdrop-filter:blur(10px) grayscale(.2)", "source": "991debb0c798841b.css . .modalOverlay" },
+    "modal_card": { "value": "background:color-mix(in srgb,var(--primary-1) 90%,var(--bg-color)); border:1px solid color-mix(in srgb,var(--primary-2) 30%,transparent); border-radius:1rem; max-width:440px", "source": "991debb0c798841b.css . .modalCard" },
+    "modal_card_alt": { "value": "color-mix(primary-1 92%, bg); border color-mix(primary-2 35%); radius 1.1rem; max-width 560px; max-height 82vh", "source": "991debb0c798841b.css . .modalCard (second variant)" },
+    "toast": { "value": "background:var(--primary-1); color:var(--primary-3); border:1px solid var(--primary-2)", "source": "991debb0c798841b.css . toast rules" },
+    "tooltip": { "value": "background:var(--bg-gradient); color:var(--primary-3); border-radius:.3rem; border:1px solid var(--bg-color)", "source": "991debb0c798841b.css . tooltip rules" },
+    "blur_values": { "value": "blur(12px) x6, blur(10px) grayscale(.2) x4, blur(.4rem), blur(.2rem), blur(.1rem)", "source": "991debb0c798841b.css . filter scan" },
+    "scrollbar": {
+      "global": { "value": "display:none", "source": "991debb0c798841b.css . ::-webkit-scrollbar" },
+      "settings": { "value": "width:6px; thumb color-mix(primary-2 15%); radius 3px", "source": "991debb0c798841b.css . settings page scrollbar" },
+      "options_list": { "value": "width:5px; thumb var(--primary-2); radius 4px", "source": "991debb0c798841b.css . options list scrollbar" },
+      "modal_body": { "value": "width:6px; thumb color-mix(primary-2 40%); radius 3px", "source": "991debb0c798841b.css . modal body scrollbar" }
+    },
+    "auth_page": { "value": "grid-template-columns:1.25fr .75fr; padding:2rem 4rem; areas 'content brand'", "source": "991debb0c798841b.css . .authPage" },
+    "player": { "value": "settings panel: max-height 30rem; border 1px solid var(--primary-2); radius .5rem", "source": "991debb0c798841b.css . player settings rules" }
+  },
+
+  "breakpoints": {
+    "values": ["max-width:380px", "max-width:480px", "max-width:768px", "max-width:769px", "min-width:770px", "max-width:1024px"],
+    "source": "991debb0c798841b.css . @media scan"
+  },
+
+  "notes": {
+    "derived_tokens": [
+      "Nox --nox-accent-hover / --nox-accent-active are NOT sampled: the reference performs hover with filter:brightness(1.1) rather than a second colour. Nox keeps the filter and exposes derived colours only where a Jellyfin surface requires a literal colour.",
+      "Nox card rest shadow is authored; the reference card has no resting shadow.",
+      "Nox scale-on-hover for cards is an authored enhancement requested in the brief; the reference changes shadow + title colour only."
+    ],
+    "excluded": [
+      "No logo, artwork, font binaries, or images from the reference are included.",
+      "The Google Fonts @import is documented but disabled by default (see tokens.css)."
+    ]
+  }
+}
