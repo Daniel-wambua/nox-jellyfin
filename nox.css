@@ -46,29 +46,29 @@
 
 :root {
   /* Surfaces */
-  --nox-bg: #1b1919;
-  --nox-bg-gradient: rgba(49, 47, 47, 0.8);
-  --nox-surface: #000000;
-  --nox-surface-raised: #101010;
-  --nox-border: rgba(164, 179, 201, 0.14);
-  --nox-border-strong: rgba(164, 179, 201, 0.28);
+  --nox-bg: #0c0912;
+  --nox-bg-gradient: rgba(45, 30, 72, 0.34);
+  --nox-surface: #120e1c;
+  --nox-surface-raised: #1b1528;
+  --nox-border: rgba(206, 190, 255, 0.14);
+  --nox-border-strong: rgba(206, 190, 255, 0.3);
 
   /* Text */
-  --nox-text: #ffffff;
-  --nox-text-secondary: #a4b3c9;
-  --nox-muted: #576b87;
+  --nox-text: #fbfaff;
+  --nox-text-secondary: #c2bcd2;
+  --nox-muted: #887f9e;
 
   /* Accent */
-  --nox-accent: #ffd700;
-  --nox-accent-rgb: 255, 215, 0;
-  --nox-on-accent: #000000;
+  --nox-accent: #c9ff68;
+  --nox-accent-rgb: 201, 255, 104;
+  --nox-on-accent: #0c1205;
 
   /* Geometry */
-  --nox-radius-card: 0.5rem;
-  --nox-radius-button: 0.3rem;
-  --nox-radius-hero: 2rem;
-  --nox-radius-plaque: 1.5rem;
-  --nox-radius-dialog: 1rem;
+  --nox-radius-card: 0.8rem;
+  --nox-radius-button: 0.65rem;
+  --nox-radius-hero: 1.75rem;
+  --nox-radius-plaque: 1.25rem;
+  --nox-radius-dialog: 1.2rem;
   --nox-radius-pill: 2rem;
 
   /* Card box */
@@ -93,8 +93,8 @@
 
   /* Effects */
   --nox-blur: 12px;
-  --nox-shadow-card: 0 12px 32px rgba(0, 0, 0, 0.55);
-  --nox-shadow-rail: 0 18px 48px rgba(0, 0, 0, 0.6);
+  --nox-shadow-card: 0 18px 42px rgba(0, 0, 0, 0.42);
+  --nox-shadow-rail: 0 18px 48px rgba(0, 0, 0, 0.58);
   --nox-focus-ring: 0 0 0 2px rgba(var(--nox-accent-rgb), 0.55);
 
   /* Type */
@@ -1909,4 +1909,288 @@ body .skinHeader .headerButton:focus-visible {
     var(--nox-surface-raised),
     var(--nox-bg)
   ) !important;
+}
+
+
+/* ==========================================================================
+   17. RIVE-INSPIRED CINEMATIC LAYOUT
+   --------------------------------------------------------------------------
+   This is an original visual treatment inspired by modern streaming products:
+   one dominant editorial hero, generous negative space, soft media rails and
+   high-contrast actions. It does not copy any third-party markup or assets.
+   The selectors stay within Jellyfin's existing hooks so behaviour remains
+   owned by Jellyfin and plugins.
+   ========================================================================== */
+
+/* A quiet atmospheric wash keeps empty space intentional without competing
+   with poster art. */
+body {
+  background-image:
+    radial-gradient(circle at 78% 0%, rgba(143, 93, 255, 0.12), transparent 34rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 24rem);
+}
+
+body .skinHeader,
+body header.MuiAppBar-root.MuiPaper-root {
+  background-color: rgba(18, 14, 28, 0.82);
+  border-color: rgba(206, 190, 255, 0.12);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(18px) saturate(135%);
+}
+
+body .skinHeader .headerButton:hover,
+body .skinHeader .headerButton:focus-visible,
+body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root:hover,
+body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root:focus-visible {
+  background-color: rgba(var(--nox-accent-rgb), 0.13);
+  color: var(--nox-accent);
+}
+
+/* Signature hero: a wide, quiet frame with copy anchored into the lower-left
+   third, a strong bottom scrim and a subtle brand-colour bloom. */
+.detailPagePrimaryContainer,
+[data-type="backdrop"] {
+  min-height: clamp(26rem, 62vh, 43rem);
+  margin-inline: clamp(0.75rem, 3vw, 3rem);
+  border: 1px solid rgba(206, 190, 255, 0.12);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  background:
+    radial-gradient(circle at 82% 18%, rgba(var(--nox-accent-rgb), 0.14), transparent 30%),
+    var(--nox-surface);
+}
+
+.detailPagePrimaryContainer .backdropContainer,
+[data-type="backdrop"] .backdropContainer {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+.detailPagePrimaryContainer .backdropImage,
+[data-type="backdrop"] .backdropImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
+  filter: saturate(1.06) contrast(1.04);
+  transform: scale(1.015);
+}
+
+.detailPagePrimaryContainer .backdropContainer::before,
+[data-type="backdrop"] .backdropContainer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(12, 9, 18, 0.98) 0%, rgba(12, 9, 18, 0.68) 30%, rgba(12, 9, 18, 0.08) 72%),
+    linear-gradient(0deg, rgba(12, 9, 18, 0.98) 0%, rgba(12, 9, 18, 0.03) 58%),
+    linear-gradient(180deg, rgba(12, 9, 18, 0.18), transparent 35%);
+}
+
+.detailPagePrimaryContainer .backdropContainer::after,
+[data-type="backdrop"] .backdropContainer::after {
+  z-index: 2;
+  background: radial-gradient(circle at 76% 22%, rgba(var(--nox-accent-rgb), 0.12), transparent 28%);
+}
+
+.detailPagePrimaryContent {
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(26rem, 62vh, 43rem);
+  padding: clamp(1.5rem, 5vw, 4.5rem);
+}
+
+.detailPagePrimaryContainer .itemName {
+  max-width: 15ch;
+  font-size: clamp(2.2rem, 5.5vw, 5.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  text-wrap: balance;
+}
+
+.detailPagePrimaryContainer .itemOverview {
+  max-width: 52ch;
+  color: rgba(251, 250, 255, 0.78);
+  font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+}
+
+.detailPagePrimaryContainer .mainDetailButtons,
+.detailPagePrimaryContainer .detailButtons {
+  gap: 0.45rem;
+  margin-top: 1.35rem;
+  padding: 0.45rem;
+  background: rgba(18, 14, 28, 0.86);
+  border: 1px solid rgba(206, 190, 255, 0.18);
+  outline: 0.55rem solid rgba(12, 9, 18, 0.86);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.26);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  backdrop-filter: blur(16px) saturate(130%);
+}
+
+.detailPagePrimaryContainer .detailButton,
+.detailPagePrimaryContainer .btnPlay {
+  min-height: 2.75rem;
+  padding-inline: 1.1rem;
+  border-radius: 0.7rem;
+  font-weight: 700;
+}
+
+/* Rails read like a magazine shelf: quiet titles, spacious gutters and a
+   card that lifts rather than shouting with permanent decoration. */
+.verticalSection {
+  margin-bottom: clamp(2.5rem, 5vw, 4.75rem);
+}
+
+.sectionTitleContainer {
+  margin-bottom: 1.1rem;
+  padding-inline: 0.2rem;
+}
+
+.sectionTitle {
+  color: var(--nox-text);
+  font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+  letter-spacing: -0.045em;
+}
+
+.sectionTitle::before {
+  content: "";
+  width: 0.28rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: var(--nox-accent);
+  box-shadow: 0 0 1.2rem rgba(var(--nox-accent-rgb), 0.55);
+}
+
+.emby-scroller,
+.scrollSlider,
+.itemsContainer {
+  scroll-padding-inline: 0.3rem;
+}
+
+.card {
+  transition:
+    transform var(--nox-dur-base) var(--nox-ease-out),
+    filter var(--nox-dur-base) var(--nox-ease),
+    opacity var(--nox-dur-base) var(--nox-ease);
+}
+
+.card .cardScalable,
+.card .cardImageContainer,
+.card .cardPadder,
+.card .cardPadder-poster {
+  border-radius: var(--nox-radius-card);
+}
+
+.card .cardImageContainer::after {
+  box-shadow: inset 0 0 0 1px rgba(206, 190, 255, 0.13);
+}
+
+.card:hover,
+.card:focus-within {
+  transform: translateY(-0.35rem);
+}
+
+.card:hover .cardScalable,
+.card:focus-within .cardScalable {
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(var(--nox-accent-rgb), 0.2);
+}
+
+.cardText-first {
+  font-size: 0.9rem;
+  letter-spacing: -0.025em;
+}
+
+.cardText-secondary {
+  color: var(--nox-muted);
+}
+
+.cardIndicators,
+.cardIndicator,
+.countIndicator {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+}
+
+.emby-scrollbuttons-button {
+  border-color: rgba(206, 190, 255, 0.22);
+  background-color: rgba(18, 14, 28, 0.88);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* Long pages should begin below the rail without creating a second visual
+   gutter on desktop. */
+@media (min-width: 1100px) {
+  body .mainAnimatedPages {
+    padding-right: clamp(1rem, 3vw, 3rem);
+  }
+
+  .detailPagePrimaryContainer,
+  [data-type="backdrop"] {
+    margin-right: clamp(1rem, 3vw, 3rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .detailPagePrimaryContainer,
+  [data-type="backdrop"] {
+    min-height: clamp(25rem, 76vh, 37rem);
+    margin-inline: 0.5rem;
+  }
+
+  .detailPagePrimaryContent {
+    min-height: clamp(25rem, 76vh, 37rem);
+    padding: 1.25rem;
+  }
+
+  .detailPagePrimaryContainer .itemName {
+    max-width: 12ch;
+    font-size: clamp(2rem, 9vw, 3.6rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .detailPagePrimaryContainer,
+  [data-type="backdrop"] {
+    min-height: 31rem;
+    border-radius: 1.25rem;
+  }
+
+  .detailPagePrimaryContent {
+    min-height: 31rem;
+    padding: 1rem;
+  }
+
+  .detailPagePrimaryContainer .itemOverview {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .detailPagePrimaryContainer .mainDetailButtons,
+  .detailPagePrimaryContainer .detailButtons {
+    width: 100%;
+    max-width: 100%;
+    outline-width: 0.35rem;
+  }
+
+  .detailPagePrimaryContainer .detailButton,
+  .detailPagePrimaryContainer .btnPlay {
+    flex: 1 1 auto;
+    padding-inline: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover,
+  .card:focus-within {
+    transform: none;
+  }
 }
