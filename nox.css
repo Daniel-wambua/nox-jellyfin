@@ -2194,3 +2194,506 @@ body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root:focus-visible {
     transform: none;
   }
 }
+
+
+/* ==========================================================================
+   18. FULL-PACKAGE CLIENT ARCHITECTURE
+   --------------------------------------------------------------------------
+   Nox is a complete client skin, not only a card palette. This layer gives the
+   legacy and modern shells one shared information architecture: floating glass
+   header, inset drawer, pill tabs, atmospheric backdrop, editorial content
+   frame, dashboard surfaces, player chrome and a floating footer.
+   ========================================================================== */
+
+:root {
+  --nox-shell-top: 1rem;
+  --nox-shell-side: 1rem;
+  --nox-shell-max: 78rem;
+  --nox-content-max: 118rem;
+  --nox-glass-bg: rgba(18, 14, 28, 0.78);
+  --nox-glass-bg-strong: rgba(18, 14, 28, 0.92);
+  --nox-glass-border: rgba(206, 190, 255, 0.16);
+  --nox-glass-highlight: rgba(255, 255, 255, 0.06);
+  --nox-backdrop-dim: 0.32;
+  --nox-footer-space: 5.5rem;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Atmospheric page layer. It is deliberately independent from the content
+   frame so artwork can breathe behind the shell without making text noisy. */
+.backgroundContainer.withBackdrop {
+  background-color: transparent;
+}
+
+.backgroundContainer.withBackdrop .backdropContainer,
+.backgroundContainer.withBackdrop .backdropImage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.backgroundContainer.withBackdrop .backdropContainer {
+  z-index: -1;
+  overflow: hidden;
+}
+
+.backgroundContainer.withBackdrop .backdropImage {
+  object-fit: cover;
+  opacity: calc(1 - var(--nox-backdrop-dim));
+  filter: blur(22px) saturate(1.12) contrast(1.08) brightness(0.38);
+  transform: scale(1.06);
+}
+
+.backgroundContainer.withBackdrop::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(12, 9, 18, 0.82), rgba(12, 9, 18, 0.96) 72%),
+    radial-gradient(circle at 78% 12%, rgba(143, 93, 255, 0.18), transparent 34rem);
+}
+
+/* Legacy header: use a floating horizontal product shell at desktop. The
+   existing rail remains available below the desktop breakpoint where a side
+   rail would compete with the content viewport. */
+@media (min-width: 1100px) {
+  body .skinHeader,
+  body header.MuiAppBar-root.MuiPaper-root {
+    top: var(--nox-shell-top);
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    width: min(calc(100vw - (var(--nox-shell-side) * 2)), var(--nox-shell-max));
+    min-height: 3.75rem;
+    height: auto;
+    max-height: none;
+    padding: 0.45rem 0.65rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid var(--nox-glass-border);
+    border-radius: 999px;
+    background: var(--nox-glass-bg);
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28), inset 0 1px 0 var(--nox-glass-highlight);
+    -webkit-backdrop-filter: blur(20px) saturate(145%);
+    backdrop-filter: blur(20px) saturate(145%);
+    transform: translateX(-50%);
+    transition: background-color var(--nox-dur-slow) var(--nox-ease), box-shadow var(--nox-dur-slow) var(--nox-ease);
+  }
+
+  body .skinHeader:hover,
+  body .skinHeader:focus-within,
+  body header.MuiAppBar-root.MuiPaper-root:hover,
+  body header.MuiAppBar-root.MuiPaper-root:focus-within {
+    width: min(calc(100vw - (var(--nox-shell-side) * 2)), var(--nox-shell-max));
+    background: var(--nox-glass-bg-strong);
+    box-shadow: 0 20px 52px rgba(0, 0, 0, 0.34), inset 0 1px 0 var(--nox-glass-highlight);
+  }
+
+  body .skinHeader.headroom--not-top,
+  body .skinHeader.headroom--pinned,
+  body .skinHeader.headroom--unpinned {
+    top: var(--nox-shell-top);
+    bottom: auto;
+    transform: translateX(-50%);
+    border-bottom-color: var(--nox-glass-border);
+  }
+
+  body .skinHeader > .headerTop {
+    flex: 1 1 auto;
+    width: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+  }
+
+  body .skinHeader .headerLeft,
+  body .skinHeader .headerRight {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  body .skinHeader .headerRight {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  body .skinHeader .headerButton {
+    width: auto;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    height: 2.75rem;
+    padding: 0.55rem 0.75rem;
+    flex-direction: row;
+    gap: 0.45rem;
+    border-radius: 999px;
+  }
+
+  body .skinHeader .headerButton::after {
+    display: none;
+  }
+
+  body .skinHeader .headerTabs {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    border: 0;
+  }
+
+  body .mainAnimatedPages {
+    padding-left: 0;
+    padding-top: 4.75rem;
+    padding-right: clamp(1rem, 3vw, 3rem);
+  }
+
+  body main.MuiBox-root .page.mainAnimatedPage {
+    left: 0;
+    padding-top: 4.75rem;
+  }
+}
+
+/* Modern MUI shell: the first stack is primary navigation, the last stack is
+   contextual/library controls. Both share the same glass product bar. */
+@media (min-width: 1100px) {
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 2.75rem;
+    height: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiStack-root,
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiBox-root,
+  body header.MuiAppBar-root.MuiPaper-root .je-header-actions-host {
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiStack-root:first-of-type {
+    flex: 0 1 auto;
+    position: static;
+    transform: none;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiStack-root:last-of-type {
+    flex: 1 1 auto;
+    justify-content: center;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .MuiBox-root:last-child,
+  body header.MuiAppBar-root.MuiPaper-root .MuiToolbar-root > .je-header-actions-host {
+    margin-left: auto;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiStack-root > a.MuiButton-root,
+  body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root,
+  body header.MuiAppBar-root.MuiPaper-root .MuiButton-root {
+    width: auto;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    height: 2.75rem;
+    padding: 0.55rem 0.8rem;
+    flex-direction: row;
+    border-radius: 999px;
+    font-size: 0.78rem;
+  }
+
+  body header.MuiAppBar-root.MuiPaper-root .MuiIconButton-root::after {
+    display: none;
+  }
+}
+
+/* Shared navigation drawer and menus. */
+body .mainDrawer,
+body .editPageSidebar,
+body .MuiDrawer-paper,
+body .MuiMenu-paper,
+body .MuiPopover-paper {
+  color: var(--nox-text);
+  background: var(--nox-glass-bg-strong);
+  background-image: none;
+  border: 1px solid var(--nox-glass-border);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), inset 0 1px 0 var(--nox-glass-highlight);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  backdrop-filter: blur(22px) saturate(145%);
+}
+
+body .mainDrawer,
+body .editPageSidebar,
+body .MuiDrawer-paper {
+  margin: var(--nox-shell-top) 0;
+  border-radius: 1.5rem;
+}
+
+body .mainDrawer.drawer-open {
+  margin: var(--nox-shell-top);
+}
+
+body .navMenuOption,
+body .MuiListItemButton-root,
+body .MuiMenu-paper .MuiButtonBase-root {
+  margin: 0.15rem 0.5rem;
+  border-radius: 0.85rem;
+  transition: background-color var(--nox-dur-fast) var(--nox-ease), color var(--nox-dur-fast) var(--nox-ease), transform var(--nox-dur-fast) var(--nox-ease);
+}
+
+body .navMenuOption:hover,
+body .navMenuOption-selected,
+body .MuiListItemButton-root:hover,
+body .MuiListItemButton-root.Mui-selected,
+body .MuiMenu-paper .MuiButtonBase-root:hover {
+  color: var(--nox-on-accent);
+  background: var(--nox-accent);
+  transform: translateX(0.12rem);
+}
+
+/* Tabs are a visible navigation system, not a default underline. */
+body .emby-tabs {
+  min-height: 2.75rem;
+  padding: 0.2rem;
+  border: 1px solid var(--nox-glass-border);
+  border-radius: 999px;
+  background: var(--nox-glass-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+body .emby-tabs-slider {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+}
+
+body .emby-tab-button {
+  min-height: 2.35rem;
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--nox-text-secondary);
+}
+
+body .emby-tab-button-active {
+  color: var(--nox-on-accent) !important;
+  background: var(--nox-accent) !important;
+}
+
+/* The content frame and footer complete the page composition on long routes. */
+body .mainAnimatedPage,
+body .scrollContainer,
+body .homeSectionsContainer,
+body .detailPageContent {
+  max-width: var(--nox-content-max);
+  margin-inline: auto;
+}
+
+body .scrollContainer {
+  padding-top: 1.5rem;
+  padding-bottom: var(--nox-footer-space);
+}
+
+body .homeSectionsContainer {
+  padding-inline: clamp(0.5rem, 2vw, 1.75rem);
+}
+
+body .appfooter,
+body .appFooter,
+body .footer {
+  margin: 1rem var(--nox-shell-side) 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--nox-glass-border);
+  border-radius: 1.25rem;
+  color: var(--nox-text-secondary);
+  background: var(--nox-glass-bg);
+  box-shadow: inset 0 1px 0 var(--nox-glass-highlight);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(18px) saturate(135%);
+}
+
+/* Detail ribbon and home-library actions use the same editorial content card
+   language as the hero rather than reverting to flat Jellyfin panels. */
+body .detailRibbon,
+body .itemBackdrop,
+body .homeLibraryButton,
+body .infoBanner {
+  border: 1px solid var(--nox-glass-border);
+  border-radius: 1.15rem;
+  background: var(--nox-glass-bg);
+  box-shadow: inset 0 1px 0 var(--nox-glass-highlight);
+}
+
+body .homeLibraryButton {
+  min-width: 11rem;
+  min-height: 3.25rem;
+  margin: 0.4rem;
+  padding-inline: 1.1rem;
+}
+
+/* Dashboard/settings coverage: if the Web dashboard is present in the same
+   client shell, its cards, form controls and submit bar inherit Nox instead of
+   becoming a separate stock application. */
+body .settingsContainer,
+body .settingsContainer .MuiPaper-root,
+body .settingsContainer .MuiCard-root,
+body .settingsContainer .paperList,
+body .readOnlyContent .verticalSection,
+body .homeScreenSettingsContainer .perLibrarySettings,
+body .homeScreenSettingsContainer .paperList,
+body .adminSection,
+body .userSection {
+  color: var(--nox-text);
+  background: var(--nox-glass-bg);
+  border: 1px solid var(--nox-glass-border);
+  border-radius: 1.25rem;
+  box-shadow: inset 0 1px 0 var(--nox-glass-highlight), 0 12px 36px rgba(0, 0, 0, 0.16);
+}
+
+body .settingsContainer .MuiOutlinedInput-root,
+body .settingsContainer .MuiFilledInput-root,
+body .settingsContainer .MuiInputBase-root {
+  color: var(--nox-text);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+body #displayPreferencesPage form button[type="submit"],
+body .settingsContainer .button-submit {
+  position: sticky;
+  bottom: 1.5rem;
+  z-index: 3;
+  min-height: 3.25rem;
+  border: 1px solid rgba(var(--nox-accent-rgb), 0.3);
+  border-radius: 0.85rem;
+  box-shadow: 0 0 26px rgba(var(--nox-accent-rgb), 0.18);
+}
+
+/* Player chrome gets a real shell treatment while retaining Jellyfin’s
+   controls and keyboard order. */
+body #videoOsdPage .videoOsdBottom,
+body #videoOsdPage .osdControls,
+body #videoOsdPage .playerStats,
+body #videoOsdPage .upNextContainer {
+  border: 1px solid rgba(206, 190, 255, 0.14);
+  border-radius: 1rem;
+  background: rgba(12, 9, 18, 0.78);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  backdrop-filter: blur(18px) saturate(130%);
+}
+
+body #videoOsdPage .videoOsdBottom {
+  margin: 0 1rem 1rem;
+  padding: 0.65rem;
+}
+
+@media (max-width: 1099px) {
+  body .skinHeader,
+  body header.MuiAppBar-root.MuiPaper-root {
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+    min-height: 3.25rem;
+    border-radius: 1rem;
+    transform: none;
+  }
+
+  body .mainAnimatedPages,
+  body main.MuiBox-root .page.mainAnimatedPage {
+    padding-top: 4.25rem;
+  }
+
+  body .mainDrawer,
+  body .editPageSidebar,
+  body .MuiDrawer-paper {
+    margin: 0.5rem;
+    border-radius: 1.25rem;
+  }
+
+  body .appfooter,
+  body .appFooter,
+  body .footer {
+    margin-inline: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .navMenuOption:hover,
+  body .MuiListItemButton-root:hover,
+  body .MuiMenu-paper .MuiButtonBase-root:hover {
+    transform: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  body .skinHeader,
+  body header.MuiAppBar-root.MuiPaper-root,
+  body .mainDrawer,
+  body .MuiDrawer-paper,
+  body .MuiMenu-paper,
+  body .appfooter,
+  body .appFooter,
+  body .footer {
+    background: var(--nox-surface);
+  }
+}
+
+
+/* Optional home spotlight hook. Nox does not install a plugin or inject
+   markup, but when Jellyfin or a compatible home-hero add-on provides a
+   `.featurediframe`, the shell reserves the correct visual runway and gives
+   the artwork the same glass/scrim treatment as the detail hero. */
+body #indexPage:has(.featurediframe) .homeSectionsContainer {
+  padding-top: clamp(5rem, 18vh, 12rem);
+}
+
+body #indexPage .featurediframe,
+body #indexPage .featurediframe.focusable {
+  overflow: hidden;
+  border: 1px solid var(--nox-glass-border);
+  border-radius: var(--nox-radius-hero);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+}
+
+body #indexPage .featurediframe + .homeSectionsContainer,
+body #indexPage:has(.featurediframe) #favoritesTab {
+  margin-top: 0;
+}
+
+@media (max-width: 600px) {
+  body #indexPage:has(.featurediframe) .homeSectionsContainer {
+    padding-top: 3.5rem;
+  }
+}
