@@ -1,7 +1,7 @@
 {
   "name": "Nox",
   "guid": "00000000-0000-0000-0000-000000000000",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "targetAbi": "10.9.0.0",
   "framework": "12.0.0.0",
   "owner": "Nox contributors",
@@ -9,7 +9,7 @@
   "description": "Nox is a full-package Jellyfin Web skin built from tokenized layers: a floating glass header for legacy and MUI shells, inset drawer and menus, pill tabs, atmospheric backdrop, editorial heroes, media rails, responsive cards, player chrome, dashboard/settings surfaces, floating footer, dialogs, forms, login and setup screens. The layout is original and uses Jellyfin hooks without external assets or plugins.",
   "category": "Theme",
   "imageUrl": "",
-  "changelog": "0.3.0: expanded Nox into a full-package client architecture with a shared floating glass shell for legacy and MUI headers, inset drawer and menus, pill tabs, atmospheric backdrop layer, centered content frame, footer, detail ribbon, home-library actions, dashboard/settings surfaces, and player chrome. 0.2.0: redesigned the default visual system around an original cinematic streaming layout inspired by modern editorial media products. Adds layered plum surfaces, lime accent, larger rounded hero framing, stronger artwork scrims, glass action plaques, more spacious media rails, elevated card interactions, and mobile refinements while retaining existing Jellyfin compatibility, accessibility, alternate palettes, and no-external-assets policy. 0.1.4: modern MUI app shell support.",
+  "changelog": "0.3.1: fine-tuned the Rive-style spotlight card, tightened vertical spacing, rebuilt the inset sidebar with compact icon and label states, and reduced the player OSD into a floating control dock. 0.3.0: expanded Nox into a full-package client architecture with a shared floating glass shell for legacy and MUI headers, inset drawer and menus, pill tabs, atmospheric backdrop layer, centered content frame, footer, detail ribbon, home-library actions, dashboard/settings surfaces, and player chrome. 0.2.0: redesigned the default visual system around an original cinematic streaming layout inspired by modern editorial media products. Adds layered plum surfaces, lime accent, larger rounded hero framing, stronger artwork scrims, glass action plaques, more spacious media rails, elevated card interactions, and mobile refinements while retaining existing Jellyfin compatibility, accessibility, alternate palettes, and no-external-assets policy. 0.1.4: modern MUI app shell support.",
   "author": "Nox contributors",
   "homepage": "",
   "license": "MIT",

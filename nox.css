@@ -2697,3 +2697,315 @@ body #indexPage:has(.featurediframe) #favoritesTab {
     padding-top: 3.5rem;
   }
 }
+
+
+/* ==========================================================================
+   19. FINE-TUNING — SPOTLIGHT, SIDEBAR, OSD
+   --------------------------------------------------------------------------
+   A compact finishing pass: the product shell should feel dense and useful,
+   not oversized. The spotlight is a composed media card, the drawer is an
+   inset navigation surface, and the player controls are a floating dock.
+   ========================================================================== */
+
+:root {
+  --nox-card-gap: 0.95rem;
+  --nox-row-gap: 2rem;
+  --nox-hero-radius: 1.35rem;
+  --nox-hero-height: clamp(20rem, 48vh, 34rem);
+  --nox-drawer-width: min(22rem, calc(100vw - 2rem));
+  --nox-osd-radius: 0.9rem;
+}
+
+/* Tighter page rhythm. The rows stay generous enough for poster art but stop
+   pushing the next shelf below the fold. */
+body .verticalSection {
+  margin-bottom: clamp(1.75rem, 3vw, 2.85rem);
+}
+
+body .sectionTitleContainer {
+  margin-bottom: 0.72rem;
+}
+
+body .sectionTitle {
+  min-height: 2rem;
+}
+
+body .scrollContainer {
+  padding-top: 0.85rem;
+}
+
+body .homeSectionsContainer {
+  padding-top: 0.75rem;
+  padding-bottom: 2rem;
+}
+
+/* Spotlight / hero: shorter, wider, and more card-like. Artwork leads, but
+   the copy block does not consume the whole viewport. */
+body .detailPagePrimaryContainer,
+body [data-type="backdrop"] {
+  min-height: var(--nox-hero-height);
+  border-radius: var(--nox-hero-radius);
+  margin-block: 0.55rem 1.25rem;
+}
+
+body .detailPagePrimaryContent {
+  min-height: var(--nox-hero-height);
+  padding: clamp(1.25rem, 3.4vw, 3rem);
+}
+
+body .detailPagePrimaryContainer .itemName {
+  max-width: 13ch;
+  font-size: clamp(2rem, 4.6vw, 4.25rem);
+}
+
+body .detailPagePrimaryContainer .itemOverview {
+  max-width: 46ch;
+  margin-bottom: 0.2rem;
+  font-size: 0.92rem;
+  line-height: 1.48;
+}
+
+body .detailPagePrimaryContainer .mainDetailButtons,
+body .detailPagePrimaryContainer .detailButtons {
+  margin-top: 0.95rem;
+  padding: 0.35rem;
+  border-radius: 1rem;
+  outline-width: 0.38rem;
+}
+
+body .detailPagePrimaryContainer .detailButton,
+body .detailPagePrimaryContainer .btnPlay {
+  min-height: 2.45rem;
+  padding-inline: 0.9rem;
+}
+
+/* Compatible home spotlight/featured iframe hook. */
+body #indexPage:has(.featurediframe) .homeSectionsContainer {
+  padding-top: 2.2rem;
+}
+
+body #indexPage .featurediframe,
+body #indexPage .featurediframe.focusable {
+  max-height: min(62vh, 38rem);
+  border-radius: var(--nox-hero-radius);
+}
+
+/* Compact inset sidebar: icon bubbles, readable labels, selected lime pill.
+   This follows the useful hierarchy of Abyss’s drawer without copying its
+   rules: groups are easy to scan, the drawer floats above artwork, and the
+   selected item is unmistakable. */
+body .mainDrawer,
+body .editPageSidebar,
+body .MuiDrawer-paper {
+  width: var(--nox-drawer-width);
+  max-width: var(--nox-drawer-width);
+  margin: var(--nox-shell-top) 0.75rem;
+  padding: 0.8rem 0.55rem;
+  border-radius: 1.55rem;
+  background: rgba(18, 14, 28, 0.9);
+}
+
+body .mainDrawer.drawer-open {
+  margin: var(--nox-shell-top) 0.75rem;
+}
+
+body .sidebarHeader,
+body .MuiListSubheader-root {
+  margin: 0.9rem 0.55rem 0.35rem;
+  padding: 0;
+  color: var(--nox-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+body .navMenuOption,
+body .MuiListItemButton-root,
+body .MuiMenu-paper .MuiButtonBase-root {
+  min-height: 2.85rem;
+  margin: 0.14rem 0.2rem;
+  padding: 0.38rem 0.55rem;
+  border-radius: 0.82rem;
+  transform: none;
+}
+
+body .navMenuOptionIcon,
+body .listItemIcon,
+body .MuiListItemIcon-root {
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.7rem;
+  padding: 0.42rem;
+  border: 1px solid rgba(206, 190, 255, 0.1);
+  border-radius: 0.68rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--nox-text-secondary);
+}
+
+body .navMenuOptionText,
+body .MuiListItemText-root .MuiTypography-root {
+  margin-top: 0;
+  color: var(--nox-text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+body .navMenuOption:hover,
+body .navMenuOption-selected,
+body .MuiListItemButton-root:hover,
+body .MuiListItemButton-root.Mui-selected {
+  color: var(--nox-on-accent);
+  background: var(--nox-accent);
+}
+
+body .navMenuOption:hover .navMenuOptionIcon,
+body .navMenuOption-selected .navMenuOptionIcon,
+body .MuiListItemButton-root:hover .MuiListItemIcon-root,
+body .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+  border-color: transparent;
+  background: rgba(12, 18, 5, 0.14);
+  color: var(--nox-on-accent);
+}
+
+body .navMenuOption:hover .navMenuOptionText,
+body .navMenuOption-selected .navMenuOptionText,
+body .MuiListItemButton-root:hover .MuiListItemText-root .MuiTypography-root,
+body .MuiListItemButton-root.Mui-selected .MuiListItemText-root .MuiTypography-root {
+  color: var(--nox-on-accent);
+}
+
+/* The drawer opener should read as a deliberate floating control, not a stock
+   hamburger button floating in empty space. */
+body .mainDrawerHandle,
+body .mainDrawerButton,
+body .headerButton.mainDrawerButton {
+  border: 1px solid var(--nox-glass-border);
+  border-radius: 0.85rem;
+  background: rgba(18, 14, 28, 0.72);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Player OSD: smaller dock with clear hierarchy and less vertical takeover. */
+body #videoOsdPage .videoOsdBottom {
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--nox-osd-radius);
+  background: rgba(12, 9, 18, 0.84);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body #videoOsdPage .osdControls {
+  gap: 0.25rem;
+  padding: 0.1rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+body #videoOsdPage .osdControls .paper-icon-button-light,
+body #videoOsdPage .osdControls .btnCommand {
+  width: 2.35rem;
+  height: 2.35rem;
+  min-width: 2.35rem;
+  padding: 0.48rem;
+  border-radius: 0.65rem;
+  color: var(--nox-text-secondary);
+}
+
+body #videoOsdPage .osdControls .paper-icon-button-light:hover,
+body #videoOsdPage .osdControls .btnCommand:hover {
+  color: var(--nox-on-accent);
+  background: var(--nox-accent);
+}
+
+body #videoOsdPage .osdTitle {
+  max-width: min(34vw, 28rem);
+  font-size: 0.86rem;
+  letter-spacing: -0.02em;
+}
+
+body #videoOsdPage .osdTextContainer {
+  font-size: 0.72rem;
+  color: var(--nox-muted);
+}
+
+body #videoOsdPage .osdProgress,
+body #videoOsdPage .mdl-slider {
+  height: 0.28rem;
+}
+
+body #videoOsdPage .sliderBubble,
+body #videoOsdPage .playerStats,
+body #videoOsdPage .upNextContainer {
+  border-radius: 0.8rem;
+}
+
+@media (max-width: 900px) {
+  body .detailPagePrimaryContainer,
+  body [data-type="backdrop"] {
+    min-height: clamp(22rem, 58vh, 30rem);
+  }
+
+  body .detailPagePrimaryContent {
+    min-height: clamp(22rem, 58vh, 30rem);
+    padding: 1rem;
+  }
+
+  body .mainDrawer,
+  body .editPageSidebar,
+  body .MuiDrawer-paper,
+  body .mainDrawer.drawer-open {
+    margin: 0.5rem;
+    width: min(20rem, calc(100vw - 1rem));
+    max-width: min(20rem, calc(100vw - 1rem));
+  }
+}
+
+@media (max-width: 600px) {
+  body .verticalSection {
+    margin-bottom: 1.55rem;
+  }
+
+  body .detailPagePrimaryContainer,
+  body [data-type="backdrop"] {
+    min-height: 26rem;
+    border-radius: 1rem;
+  }
+
+  body .detailPagePrimaryContent {
+    min-height: 26rem;
+  }
+
+  body #videoOsdPage .videoOsdBottom {
+    left: 0.4rem;
+    right: 0.4rem;
+    bottom: 0.4rem;
+    padding: 0.3rem;
+  }
+
+  body #videoOsdPage .osdTitle {
+    max-width: 42vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .navMenuOption,
+  body .MuiListItemButton-root,
+  body #videoOsdPage .osdControls .paper-icon-button-light,
+  body #videoOsdPage .osdControls .btnCommand {
+    transition: none;
+  }
+}

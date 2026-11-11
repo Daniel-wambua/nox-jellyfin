@@ -351,3 +351,14 @@
   --nox-backdrop-dim: 0.32;
   --nox-footer-space: 5.5rem;
 }
+
+
+/* Fine-tuning tokens. */
+:root {
+  --nox-card-gap: 0.95rem;
+  --nox-row-gap: 2rem;
+  --nox-hero-radius: 1.35rem;
+  --nox-hero-height: clamp(20rem, 48vh, 34rem);
+  --nox-drawer-width: min(22rem, calc(100vw - 2rem));
+  --nox-osd-radius: 0.9rem;
+}

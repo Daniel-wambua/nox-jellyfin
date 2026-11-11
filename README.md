@@ -13,7 +13,7 @@ Jellyfin Web → **Dashboard → General → Custom CSS**, and paste one of thes
 **Pinned to a release** (recommended):
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.3.1/nox.css');
 ```
 
 The `@import` must be the first rule in the box. If Jellyfin's editor already has something above it, move it up or the import is silently dropped.
@@ -153,7 +153,7 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
 
 | File | Purpose |
 |---|---|
-| `nox.css` | The theme. This is the file you install. ~2500 lines, 18 numbered sections. |
+| `nox.css` | The theme. This is the file you install. ~2800 lines, 19 numbered sections. |
 | `nox.min.css` | Minified build of the same file. Same rules, smaller transfer. |
 | `tokens.css` | Standalone token layer: the `:root` block, all 15 palettes and the Jellyfin bridge. Optional. |
 | `palette.json` | Every token with its value, the rule that declares it, and the selectors that consume it. Includes measured contrast ratios. |
@@ -246,7 +246,7 @@ If you do get the red outline, the box works and the problem is step 2 or 3.
 Open this in a new tab:
 
 ```
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.3.1/nox.css
 ```
 
 It should display the stylesheet as plain text. If it 404s, hangs, or is blocked,
@@ -258,6 +258,10 @@ behind Pi-hole or with outbound filtering. Use the self-hosted route below.
 If anything at all precedes the `@import` — a comment, a variable, a leftover
 rule from another theme — browsers **drop the import silently**, with no console
 message. Delete everything above it.
+
+### Fine-tuned spotlight, sidebar, and player OSD
+
+The latest finishing layer reduces vertical rhythm and hero height so more shelves remain visible above the fold. Spotlight artwork is treated as a wide, rounded media card with a restrained copy block and compact action plaque. The sidebar is an inset glass surface with compact icon bubbles, grouped labels, and a clear lime selected state. The player OSD is a smaller floating dock with compact controls, a readable title hierarchy, and less obstruction over the video.
 
 ### Full-package architecture
 
@@ -285,7 +289,7 @@ the current build is 51,621 bytes:
 
 ```
 https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.3.1/nox.css
 ```
 
 If the `@main` copy is smaller, switch the import to `@0.1.2`.
