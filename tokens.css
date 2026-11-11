@@ -336,3 +336,18 @@
   --jf-palette-action-hover: rgba(164, 179, 201, 0.1);
   --jf-card-borderRadius: var(--nox-radius-card);
 }
+
+
+/* Full-package shell tokens. */
+:root {
+  --nox-shell-top: 1rem;
+  --nox-shell-side: 1rem;
+  --nox-shell-max: 78rem;
+  --nox-content-max: 118rem;
+  --nox-glass-bg: rgba(18, 14, 28, 0.78);
+  --nox-glass-bg-strong: rgba(18, 14, 28, 0.92);
+  --nox-glass-border: rgba(206, 190, 255, 0.16);
+  --nox-glass-highlight: rgba(255, 255, 255, 0.06);
+  --nox-backdrop-dim: 0.32;
+  --nox-footer-space: 5.5rem;
+}

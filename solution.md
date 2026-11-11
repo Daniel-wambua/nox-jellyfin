@@ -83,9 +83,19 @@ The pre-existing focus rings, forced-colors support, reduced-motion support, fal
 
 The theme continues to use no external assets by default. This avoids a runtime dependency for the login page and aligns with Jellyfin’s warning that externally referenced resources must be reachable by every client. [3]
 
+## Full-package architecture pass
+
+The first redesign did not go far enough: it improved the palette, hero, and cards but left the page architecture centered on the original rail. This pass fixes that. Section 18 now treats Nox as a complete Web client skin.
+
+The shell is shared across the legacy and MUI headers. Desktop uses a centered floating glass header with primary navigation, contextual controls, and account actions in one consistent bar. Smaller screens keep an inset responsive header. The drawer, menus, and popovers share the same raised glass surface and selected-state language.
+
+The page layer now supports a full atmospheric backdrop, a max-width content frame, pill-shaped tabs, floating footer surfaces, detail ribbons, home-library action cards, dashboard/settings cards and form controls, and player OSD panels. The content layer remains separate: the cinematic hero, rails, cards, detail page, dialogs, login, and accessibility sections continue to own their respective surfaces.
+
+This architecture is inspired by the coverage and separation of concerns in Abyss, but the selectors, tokens, visual language, and implementation are original to Nox.
+
 ## Files changed
 
-- `nox.css` — source stylesheet; new default tokens and section 17 visual system.
+- `nox.css` — source stylesheet; default tokens plus sections 17 and 18 for the cinematic visual system and full-package shell architecture.
 - `nox.min.css` — minified build regenerated from `nox.css`.
 - `tokens.css` — standalone token layer synchronized with the new default.
 - `palette.json` — default palette values synchronized with the source.
@@ -114,10 +124,10 @@ The theme continues to target Jellyfin Web. Native TV, mobile, and other clients
 
 ## Installation after merge
 
-Use the release-pinned import after the PR is merged and a `0.2.0` release is published:
+Use the release-pinned import after the PR is merged and a `0.3.0` release is published:
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.3.0/nox.css');
 ```
 
 The import must be the first rule in Jellyfin’s Custom CSS field. Save the setting and hard-refresh the browser.

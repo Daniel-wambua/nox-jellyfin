@@ -1,6 +1,6 @@
 # Nox
 
-A cinematic Jellyfin Web theme with a floating navigation rail, layered plum surfaces, lime accent, rounded media rails, oversized editorial heroes, and a login screen that matches the rest of the client.
+A full-package cinematic Jellyfin Web theme with a floating glass shell, layered plum surfaces, lime accent, rounded media rails, oversized editorial heroes, themed drawers, tabs, player chrome, dashboard surfaces, footer, login, and setup screens.
 
 Built entirely from standard CSS custom properties. One import line, no plugins, no build step, no external assets.
 
@@ -153,7 +153,7 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
 
 | File | Purpose |
 |---|---|
-| `nox.css` | The theme. This is the file you install. ~2200 lines, 17 numbered sections. |
+| `nox.css` | The theme. This is the file you install. ~2500 lines, 18 numbered sections. |
 | `nox.min.css` | Minified build of the same file. Same rules, smaller transfer. |
 | `tokens.css` | Standalone token layer: the `:root` block, all 15 palettes and the Jellyfin bridge. Optional. |
 | `palette.json` | Every token with its value, the rule that declares it, and the selectors that consume it. Includes measured contrast ratios. |
@@ -173,6 +173,8 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
  6. Hero and backdrop     15. Motion, fallbacks, accessibility
  7. Carousel rows         16. BRITTLE  ← fragile selectors, all in one place
  8. Cards
+ 17. Cinematic visual system
+ 18. Full-package client architecture
 ```
 
 Section 3 carries both headers: 3 styles the legacy `.skinHeader`, 3b the MUI header newer clients render.
@@ -256,6 +258,12 @@ behind Pi-hole or with outbound filtering. Use the self-hosted route below.
 If anything at all precedes the `@import` — a comment, a variable, a leftover
 rule from another theme — browsers **drop the import silently**, with no console
 message. Delete everything above it.
+
+### Full-package architecture
+
+Nox is designed as a complete Jellyfin Web client skin, not only a card theme. Section 18 composes the client into a shared shell: a floating glass header for both the legacy and MUI app shells, an inset glass drawer and menus, pill-shaped tabs, an atmospheric backdrop layer, a centered content frame, floating footer surfaces, detail ribbons, home-library actions, dashboard/settings cards, and player OSD chrome.
+
+The hero and media-rail system in sections 6, 7, and 17 supplies the editorial content layer. The shell intentionally stays separate from content selectors so a Jellyfin markup change in one area does not flatten the whole design.
 
 ### The route that cannot fail
 
