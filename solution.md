@@ -93,6 +93,16 @@ The page layer now supports a full atmospheric backdrop, a max-width content fra
 
 This architecture is inspired by the coverage and separation of concerns in Abyss, but the selectors, tokens, visual language, and implementation are original to Nox.
 
+## Fine-tuning pass
+
+The full-package architecture was visually too spacious in its first form. This pass reduces `--nox-row-gap` and `--nox-card-gap`, tightens shelf title spacing, and reduces content-frame padding so the interface shows more useful media above the fold without becoming cramped.
+
+The spotlight/detail hero now uses a shorter `clamp(20rem, 48vh, 34rem)` frame, a smaller title scale, shorter synopsis line-height, and a tighter action plaque. When a compatible home spotlight exposes `.featurediframe`, it receives the same wide rounded-card treatment rather than a full-screen takeover.
+
+The sidebar now uses a compact inset width, tighter grouped spacing, icon bubbles, compact labels, and a lime selected surface. The navigation remains keyboard and Jellyfin controlled; only the visual hierarchy changed.
+
+The player OSD is now a floating dock with smaller controls, a reduced margin footprint, a shorter progress bar, compact title/technical text, and smaller supporting panels. The original Jellyfin control order and behavior remain intact.
+
 ## Files changed
 
 - `nox.css` — source stylesheet; default tokens plus sections 17 and 18 for the cinematic visual system and full-package shell architecture.
@@ -124,10 +134,10 @@ The theme continues to target Jellyfin Web. Native TV, mobile, and other clients
 
 ## Installation after merge
 
-Use the release-pinned import after the PR is merged and a `0.3.0` release is published:
+Use the release-pinned import after the PR is merged and a `0.3.1` release is published:
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.3.0/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.3.1/nox.css');
 ```
 
 The import must be the first rule in Jellyfin’s Custom CSS field. Save the setting and hard-refresh the browser.
