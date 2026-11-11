@@ -1,6 +1,6 @@
 # Nox
 
-A dark theme for Jellyfin Web. Near-black page, a floating black navigation rail that expands on hover, gold accent, rounded poster cards, scrimmed heroes, and a login screen that matches the rest of the client.
+A cinematic Jellyfin Web theme with a floating navigation rail, layered plum surfaces, lime accent, rounded media rails, oversized editorial heroes, and a login screen that matches the rest of the client.
 
 Built entirely from standard CSS custom properties. One import line, no plugins, no build step, no external assets.
 
@@ -13,7 +13,7 @@ Jellyfin Web → **Dashboard → General → Custom CSS**, and paste one of thes
 **Pinned to a release** (recommended):
 
 ```css
-@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css');
+@import url('https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css');
 ```
 
 The `@import` must be the first rule in the box. If Jellyfin's editor already has something above it, move it up or the import is silently dropped.
@@ -108,8 +108,8 @@ Two properties, near the top of `nox.css` or in `tokens.css`:
 
 ```css
 :root {
-  --nox-accent: #ffd700;          /* the colour itself */
-  --nox-accent-rgb: 255, 215, 0;  /* the same colour as a triplet, for tints */
+  --nox-accent: #c9ff68;          /* the colour itself */
+  --nox-accent-rgb: 201, 255, 104;  /* the same colour as a triplet, for tints */
 }
 ```
 
@@ -123,7 +123,7 @@ Fourteen alternates ship alongside the default. Apply one as a class on `<html>`
 
 | Class | Mood |
 |---|---|
-| *(default)* | Warm near-black, gold |
+| *(default)* | Layered plum, lime |
 | `.nox-charcoal` | Neutral greys, gold |
 | `.nox-evergreen` | Deep green, mint |
 | `.nox-midnight` | Navy, ice blue |
@@ -153,7 +153,7 @@ The theme asks for Roboto Mono and falls back to the platform's monospace. It do
 
 | File | Purpose |
 |---|---|
-| `nox.css` | The theme. This is the file you install. ~1900 lines, 17 numbered sections. |
+| `nox.css` | The theme. This is the file you install. ~2200 lines, 17 numbered sections. |
 | `nox.min.css` | Minified build of the same file. Same rules, smaller transfer. |
 | `tokens.css` | Standalone token layer: the `:root` block, all 15 palettes and the Jellyfin bridge. Optional. |
 | `palette.json` | Every token with its value, the rule that declares it, and the selectors that consume it. Includes measured contrast ratios. |
@@ -244,7 +244,7 @@ If you do get the red outline, the box works and the problem is step 2 or 3.
 Open this in a new tab:
 
 ```
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css
 ```
 
 It should display the stylesheet as plain text. If it 404s, hangs, or is blocked,
@@ -277,7 +277,7 @@ the current build is 51,621 bytes:
 
 ```
 https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@main/nox.css
-https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.1.4/nox.css
+https://cdn.jsdelivr.net/gh/Daniel-wambua/nox-jellyfin@0.2.0/nox.css
 ```
 
 If the `@main` copy is smaller, switch the import to `@0.1.2`.

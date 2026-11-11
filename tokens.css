@@ -42,31 +42,31 @@
 
 :root {
   /* Surfaces */
-  --nox-bg: #1b1919;
-  --nox-bg-gradient: rgba(49, 47, 47, 0.8);
-  --nox-surface: #000000;
-  --nox-surface-raised: #101010;
+  --nox-bg: #0c0912;
+  --nox-bg-gradient: rgba(45, 30, 72, 0.34);
+  --nox-surface: #120e1c;
+  --nox-surface-raised: #1b1528;
 
   /* Lines */
-  --nox-border: rgba(164, 179, 201, 0.14);
-  --nox-border-strong: rgba(164, 179, 201, 0.28);
+  --nox-border: rgba(206, 190, 255, 0.14);
+  --nox-border-strong: rgba(206, 190, 255, 0.3);
 
   /* Text */
-  --nox-text: #ffffff;
-  --nox-text-secondary: #a4b3c9;
-  --nox-muted: #576b87;
+  --nox-text: #fbfaff;
+  --nox-text-secondary: #c2bcd2;
+  --nox-muted: #887f9e;
 
   /* Accent — change these two to re-skin every accent surface in the theme */
-  --nox-accent: #ffd700;
-  --nox-accent-rgb: 255, 215, 0;
-  --nox-on-accent: #000000;
+  --nox-accent: #c9ff68;
+  --nox-accent-rgb: 201, 255, 104;
+  --nox-on-accent: #0c1205;
 
   /* Radii */
-  --nox-radius-card: 0.5rem;
-  --nox-radius-button: 0.3rem;
-  --nox-radius-hero: 2rem;
-  --nox-radius-plaque: 1.5rem;
-  --nox-radius-dialog: 1rem;
+  --nox-radius-card: 0.8rem;
+  --nox-radius-button: 0.65rem;
+  --nox-radius-hero: 1.75rem;
+  --nox-radius-plaque: 1.25rem;
+  --nox-radius-dialog: 1.2rem;
   --nox-radius-pill: 2rem;
 
   /* Metrics */
@@ -89,8 +89,8 @@
 
   /* Depth */
   --nox-blur: 12px;
-  --nox-shadow-card: 0 12px 32px rgba(0, 0, 0, 0.55);
-  --nox-shadow-rail: 0 18px 48px rgba(0, 0, 0, 0.6);
+  --nox-shadow-card: 0 18px 42px rgba(0, 0, 0, 0.42);
+  --nox-shadow-rail: 0 18px 48px rgba(0, 0, 0, 0.58);
   --nox-focus-ring: 0 0 0 2px rgba(var(--nox-accent-rgb), 0.55);
 
   /* Type */
